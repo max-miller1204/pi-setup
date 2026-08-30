@@ -1,0 +1,37 @@
+{
+  "theme": "dots-system",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-sol",
+  "defaultThinkingLevel": "high",
+  "packages": [
+    "git:github.com/max-miller1204/pi-setup",
+    "npm:stepstone",
+    "npm:pi-web-access",
+    "git:github.com/elpapi42/pi-observational-memory",
+    "npm:pi-mcp-adapter",
+    "git:github.com/max-miller1204/pi-interactive-subagents"
+  ],
+  "observational-memory": {
+    "compactAfterTokens": 81000,
+    "compactAfterTokensMode": "ratio",
+    "compactAfterTokensRatio": 0.68,
+    "model": {
+      "provider": "openai-codex",
+      "id": "gpt-5.6-luna",
+      "thinking": "low"
+    }
+  },
+  "enabledModels": [
+    "openrouter/z-ai/glm-5.3",
+    "openai-codex/gpt-5.6-sol",
+    "openai-codex/gpt-5.6-luna",
+    "openai-codex/gpt-5.6-terra",
+    "openrouter/~deepseek/deepseek-v4-flash-latest",
+    "openrouter/z-ai/glm-5.3-flash"
+  ],
+  "tuiMode": "fullscreen",
+  "hideThinkingBlock": false,
+  "markdown": {
+    "mermaid": "streaming"
+  }
+}

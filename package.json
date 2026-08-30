@@ -1,0 +1,23 @@
+{
+  "name": "pi-setup",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Max Miller's personal Pi coding-agent setup",
+  "keywords": [
+    "pi-package"
+  ],
+  "type": "module",
+  "pi": {
+    "extensions": [
+      "./extensions/*.ts"
+    ],
+    "themes": [
+      "./themes/*.json"
+    ]
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@mariozechner/pi-tui": "*",
+    "@sinclair/typebox": "*"
+  }
+}
