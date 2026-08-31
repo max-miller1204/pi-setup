@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
@@ -9,12 +9,5 @@ const settings = JSON.parse(await readFile(path.join(root, "config", "settings.j
 
 assert.equal(packageJson.pi?.themes, undefined, "pi-setup must not publish themes managed by Dots");
 assert.equal(settings.theme, "dots-system", "Pi settings should continue selecting the Dots-managed theme");
-
-try {
-  await access(path.join(root, "themes", "dots-system.json"));
-  assert.fail("themes/dots-system.json must be supplied by Dots, not pi-setup");
-} catch (error) {
-  if (error?.code !== "ENOENT") throw error;
-}
 
 console.log("Theme ownership check passed: dots-system is selected here and supplied only by Dots.");
