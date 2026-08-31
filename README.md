@@ -2,19 +2,18 @@
 
 [![CI](https://github.com/max-miller1204/pi-setup/actions/workflows/ci.yml/badge.svg)](https://github.com/max-miller1204/pi-setup/actions/workflows/ci.yml)
 
-My personal setup for the [Pi coding agent](https://pi.dev): extensions, sub-agent profiles, theme, package list, and runtime preferences.
+My personal setup for the [Pi coding agent](https://pi.dev): extensions, sub-agent profiles, theme selection, package list, and runtime preferences.
 
 ## Included
 
 - `extensions/ask-user-question.ts` — structured single- and multi-choice user prompts
 - `extensions/custom-header.ts` — custom Pi startup header
 - `agents/` — browser, research, scout, and general worker profiles for `pi-interactive-subagents`
-- `themes/dots-system.json` — Tokyo Night-inspired terminal theme
-- `config/settings.json` — preferred models, thinking level, packages, observational-memory settings, and fullscreen TUI preferences
+- `config/settings.json` — preferred models, thinking level, packages, observational-memory settings, fullscreen TUI preferences, and selection of the externally managed `dots-system` theme
 
 ## Install
 
-Requirements: Pi, Git, Python 3, and tmux for sub-agents.
+Requirements: Pi, Git, Python 3, and tmux for sub-agents. The selected `dots-system` theme requires [Dots](https://github.com/max-miller1204/dots); otherwise, choose another theme after installation.
 
 ```bash
 git clone https://github.com/max-miller1204/pi-setup.git
@@ -45,12 +44,17 @@ pi update --extensions
 
 Re-run `./install.sh` after pulling this repository when agent profiles or settings change.
 
+## Theme ownership
+
+The `dots-system` theme is deliberately not bundled here. Dots generates and installs it at `~/.pi/agent/themes/dots-system.json`; publishing the same theme from this Pi package would create a resource-name collision. This repository only keeps `"theme": "dots-system"` in the shared settings.
+
 ## Validation
 
 Pull requests and pushes to `main` run GitHub Actions checks that:
 
 - reject legacy `@mariozechner/pi-*` and `@sinclair/typebox` imports or dependencies;
 - prove the dependency guard catches the original stale-import regression;
+- enforce that `dots-system` is selected here but supplied only by Dots;
 - type-check the extensions against the locked Pi API;
 - load both extensions through Pi's RPC runtime; and
 - reject dependency vulnerabilities reported by `npm audit`.

@@ -53,4 +53,7 @@ settings_path.write_text(json.dumps(current, indent=2) + "\n")
 PY
 
 echo "Installed Pi setup. Run /login in Pi to configure provider credentials."
+if [[ ! -f "$config_dir/themes/dots-system.json" ]]; then
+  echo "Warning: dots-system is selected but not installed; run Dots theme sync or choose another Pi theme." >&2
+fi
 echo "Optional: install the playwright-cli skill used by browser-worker."
