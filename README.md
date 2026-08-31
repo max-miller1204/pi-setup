@@ -1,5 +1,7 @@
 # pi-setup
 
+[![CI](https://github.com/max-miller1204/pi-setup/actions/workflows/ci.yml/badge.svg)](https://github.com/max-miller1204/pi-setup/actions/workflows/ci.yml)
+
 My personal setup for the [Pi coding agent](https://pi.dev): extensions, sub-agent profiles, theme, package list, and runtime preferences.
 
 ## Included
@@ -42,6 +44,24 @@ pi update --extensions
 ```
 
 Re-run `./install.sh` after pulling this repository when agent profiles or settings change.
+
+## Validation
+
+Pull requests and pushes to `main` run GitHub Actions checks that:
+
+- reject legacy `@mariozechner/pi-*` and `@sinclair/typebox` imports or dependencies;
+- prove the dependency guard catches the original stale-import regression;
+- type-check the extensions against the locked Pi API;
+- load both extensions through Pi's RPC runtime; and
+- reject dependency vulnerabilities reported by `npm audit`.
+
+Run the same checks locally with:
+
+```bash
+npm ci --ignore-scripts
+npm run check
+npm audit --audit-level=low
+```
 
 ## Security and exclusions
 
