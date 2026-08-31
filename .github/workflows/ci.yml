@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.19.0
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Guard dependencies and validate extensions
+        run: npm run check
+
+      - name: Reject deprecated packages in the installed tree
+        run: |
+          test "$(npm query '[name^="@mariozechner/pi-"]' | node -e 'let data=""; process.stdin.on("data", chunk => data += chunk); process.stdin.on("end", () => process.stdout.write(String(JSON.parse(data).length)))')" = "0"
+          test "$(npm query '[name="@sinclair/typebox"]' | node -e 'let data=""; process.stdin.on("data", chunk => data += chunk); process.stdin.on("end", () => process.stdout.write(String(JSON.parse(data).length)))')" = "0"
+
+      - name: Audit dependency tree
+        run: npm audit --audit-level=low
