@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/max-miller1204/pi-setup/actions/workflows/ci.yml/badge.svg)](https://github.com/max-miller1204/pi-setup/actions/workflows/ci.yml)
 
-My personal setup for the [Pi coding agent](https://pi.dev): extensions, sub-agent profiles, theme, package list, and runtime preferences.
+My personal setup for the [Pi coding agent](https://pi.dev): extensions, sub-agent profiles, theme selection, package list, and runtime preferences.
 
 ## Included
 
