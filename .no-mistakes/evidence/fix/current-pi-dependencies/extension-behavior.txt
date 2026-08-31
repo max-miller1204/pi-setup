@@ -1,0 +1,39 @@
+TEXT ANSWER
+User answered: Dependency migration complete
+
+SINGLE-SELECT UI
+────────────────────────────────────────────────────────────────────────
+ Which migration should we ship?
+
+ Choose one supported dependency family.
+
+> 1. Current Pi packages (Recommended)
+     Use the supported namespace.
+  Other
+
+ ↑↓ navigate • Enter select • Esc cancel
+────────────────────────────────────────────────────────────────────────
+
+SINGLE-SELECT RESULT
+User selected: 1. Current Pi packages (Recommended)
+
+HEADLESS FAILURE MODE
+ask_user_question requires interactive mode UI
+
+CUSTOM HEADER UI
+
+   ███████████████████████████╗  
+   ╚══██████╔════════██████╔══╝  
+      ██████║        ██████║     
+      ██████║        ██████║     
+      ██████║        ██████║     
+      ██████║        ██████║     
+      ██████║        ██████║     
+      ██████║        ██████║     
+   ████████████╗  ████████████╗  
+   ╚═══════════╝  ╚═══════════╝  
+
+pi v0.84.4
+
+RESTORE COMMAND RESULT
+Built-in header restored (info); custom header cleared

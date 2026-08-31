@@ -1,0 +1,13 @@
+pi-setup@1.0.0 /home/maxmiller/.no-mistakes/worktrees/b3b8feb5a6fd/01M1B3DNTG63XS7F281A0849PE
+├─┬ @earendil-works/pi-coding-agent@0.84.4
+│ ├─┬ @earendil-works/pi-agent-core@0.84.4
+│ │ └── typebox@1.3.7 deduped
+│ ├─┬ @earendil-works/pi-ai@0.84.4
+│ │ └── typebox@1.3.7 deduped
+│ ├─┬ @earendil-works/pi-protocol@0.84.4
+│ │ └── typebox@1.3.7 deduped
+│ ├── @earendil-works/pi-tui@0.84.4
+│ └── typebox@1.3.7
+├── @earendil-works/pi-tui@0.84.4
+└── typebox@1.3.23
+
