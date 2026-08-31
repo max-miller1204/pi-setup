@@ -1,0 +1,23 @@
+
+> pi-setup@1.0.0 check
+> npm run check:dependencies && npm run test:dependency-guard && npm run typecheck && npm run smoke:extensions
+
+
+> pi-setup@1.0.0 check:dependencies
+> node scripts/check-dependencies.mjs
+
+Dependency guard passed: no legacy Pi imports or dependencies found.
+
+> pi-setup@1.0.0 test:dependency-guard
+> node scripts/test-dependency-guard.mjs
+
+Dependency guard regression test passed: legacy imports and dependencies were rejected.
+
+> pi-setup@1.0.0 typecheck
+> tsc --noEmit
+
+
+> pi-setup@1.0.0 smoke:extensions
+> node scripts/smoke-extensions.mjs
+
+Extension smoke test passed: Pi loaded both extensions and registered builtin-header.
