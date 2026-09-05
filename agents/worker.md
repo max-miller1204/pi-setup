@@ -1,7 +1,9 @@
 ---
 name: worker
 description: General-purpose worker — reads, writes, and edits code
-tools: read, write, edit, bash, web_search, source_check, fetch_content, get_search_content
+tools: read, write, edit, bash, web_search, source_check, fetch_content, get_search_content, mcp, mcpScript
+skill-policy: allowlist
+available-skills: mcp-scripting, playwright-cli
 subagent_agents: scout, researcher
 model: openai-codex/gpt-5.6-sol
 thinking: medium

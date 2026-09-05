@@ -19,6 +19,26 @@ fi
 
 install -m 0644 "$repo_dir"/agents/*.md "$config_dir/agents/"
 
+skills_dir="$HOME/.agents/skills"
+skills_backup=""
+mkdir -p "$skills_dir"
+for skill_dir in "$repo_dir"/skills/*/; do
+  skill_name="$(basename "$skill_dir")"
+  case "$skill_name" in
+    mcp-scripting|playwright-cli) continue ;;
+  esac
+  target="$skills_dir/$skill_name"
+  if [[ -e "$target" || -L "$target" ]]; then
+    if [[ -z "$skills_backup" ]]; then
+      skills_backup="$(mktemp -d "$config_dir/skills-backup.XXXXXX")"
+      echo "Backed up skills to $skills_backup"
+    fi
+    cp -RL "$target" "$skills_backup/$skill_name"
+  fi
+  mkdir -p "$target"
+  cp -R "$skill_dir". "$target/"
+done
+
 packages=(
   "git:github.com/max-miller1204/pi-setup"
   "npm:stepstone"
@@ -56,4 +76,5 @@ echo "Installed Pi setup. Run /login in Pi to configure provider credentials."
 if [[ ! -f "$config_dir/themes/dots-system.json" ]]; then
   echo "Warning: dots-system is selected but not installed; run Dots theme sync or choose another Pi theme." >&2
 fi
-echo "Optional: install the playwright-cli skill used by browser-worker."
+echo "Installed custom skills in $skills_dir."
+echo "Optional: install the playwright-cli skill used by browser-worker and reviewer."

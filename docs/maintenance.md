@@ -8,7 +8,22 @@ Update installed Pi extensions:
 pi update --extensions
 ```
 
-After pulling this repository, rerun `./install.sh` when agent profiles or settings have changed.
+After pulling this repository, rerun `./install.sh` when agent profiles, settings, or skills have changed. `pi update --extensions` does not update the shared skill copies.
+
+## Copy local changes into the repository
+
+From the repository root, copy agent profiles and the two custom skills:
+
+```bash
+cp ~/.pi/agent/agents/*.md agents/
+cp -R ~/.agents/skills/iterative-review skills/
+cp -R ~/.agents/skills/reviewed-pr skills/
+git diff -- agents/ skills/
+```
+
+Inspect new, untracked files with `git status --short`. For another custom skill, copy its complete directory into `skills/` and add its name to `ownedSkills` in `scripts/test-install.mjs`. Keep helper files and relative links with the skill. Do not add `mcp-scripting` or `playwright-cli`; their tools supply them.
+
+Compare `~/.pi/agent/settings.json` with `config/settings.json` manually. Copy only portable preferences. Keep the `pi-setup` package entry in the template so new installations load the extensions. Do not copy `lastChangelogVersion`, credentials, or local paths.
 
 ## Theme ownership
 
@@ -23,6 +38,7 @@ Pull requests and pushes to `main` run GitHub Actions checks that:
 - reject legacy `@mariozechner/pi-*` and `@sinclair/typebox` imports or dependencies;
 - prove the dependency guard catches the original stale-import regression;
 - enforce that `dots-system` is selected here but supplied only by Dots;
+- test new and repeated installs in temporary home directories, check skill backups, preserve external skills, and load skills with Pi;
 - type-check the extensions against the locked Pi API;
 - load both extensions through Pi's RPC runtime; and
 - reject dependency vulnerabilities reported by `npm audit`.
@@ -43,7 +59,8 @@ This repository intentionally excludes:
 - sessions and trust decisions;
 - caches, installed dependencies, and generated model catalogs;
 - nested package clones and local development artifacts;
-- externally generated Playwright CLI and no-mistakes skills;
+- externally generated MCP scripting, Playwright CLI, and no-mistakes skills;
+- local skill and settings backups;
 - the Herdr state extension; and
 - the Dots theme ownership marker.
 

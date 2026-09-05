@@ -2,6 +2,8 @@
 name: browser-worker
 description: Web-development worker for browser automation, visual verification, and Chrome debugging
 tools: read, write, edit, bash, web_search, source_check, fetch_content, get_search_content, mcp, mcpScript
+skill-policy: allowlist
+available-skills: playwright-cli, mcp-scripting
 skills: playwright-cli, mcp-scripting
 subagent_agents: scout, researcher
 model: openai-codex/gpt-5.6-sol
