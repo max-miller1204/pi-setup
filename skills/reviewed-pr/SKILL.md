@@ -52,13 +52,16 @@ When this skill follows `iterative-review`, require a complete handoff with:
 - status `satisfied` or `accepted-with-findings`;
 - base ref and merge-base SHA;
 - final reviewed `HEAD` SHA;
+- complete latest independent review JSON object in `review`;
 - concrete change summary;
 - reproduction evidence;
 - exact test commands and outcomes.
 
 Refuse `blocked`, `fix-rounds-exhausted`, and `review-only` handoffs.
 
-For `accepted-with-findings`, confirm that the user explicitly accepted every remaining finding ID. Do not infer acceptance from silence.
+For both permitted states, validate the review output contract. Require `review_status: complete`, no blockers, and reviewed SHAs that match the handoff base and head. Confirm that the recorded checks cover all required project checks and passed on that exact final code. Do not infer completion from an empty findings array or from the handoff status alone. If review evidence or required check evidence is missing, incomplete, or failed, stop and return control to the `reviewer` subagent for `iterative-review`; do not draft or publish from that handoff.
+
+For `satisfied`, the review findings must be empty. For `accepted-with-findings`, confirm that the user explicitly accepted every remaining finding ID and that the finding still matches the accepted description. Do not infer acceptance from silence. Acceptance does not waive review completion, project checks, or final revision checks.
 
 Before drafting:
 
@@ -71,7 +74,7 @@ Before drafting:
 7. Inspect the complete merge-base-to-`HEAD` diff.
 8. Inspect an existing pull request for this branch when one exists.
 
-If the revision changed after review, stop. Return control to `iterative-review` for checks and a new fresh full review.
+If the revision changed after review, stop. Return control to the `reviewer` subagent for checks and a new fresh full review. If you are already that reviewer, resume your workflow. Otherwise, send the complete handoff and reason for the return to the same reviewer session when available, or delegate to a new `reviewer`. Do not run the review loop in the main session.
 
 ## 2. Draft the title
 

@@ -60,7 +60,7 @@ gh auth status
 
 The installer supplies these custom skills from this repository:
 
-- `iterative-review` — bounded review, repair, and independent review checks;
+- `iterative-review` — delegates to `reviewer` for bounded review, repair, and independent review checks;
 - `reviewed-pr` — pull request drafts and authorized publication.
 
 They use `~/.agents/skills/` so other compatible agents can also find them. The Pi package manifest disables package skill loading to prevent duplicate names. Rerun `./install.sh` after skill changes.
@@ -128,6 +128,6 @@ Start Pi and verify that:
 - the `scout`, `researcher`, `worker`, `browser-worker`, and `reviewer` sub-agents are available; and
 - `/skill:iterative-review` and `/skill:reviewed-pr` are available without duplicate-name warnings.
 
-The `review-pass` profile is hidden from the agent list. The `reviewer` agent starts it by name for each independent review pass. Strict skill policies require a current version of `pi-interactive-subagents`. Run `pi update --extensions` if an existing installation does not support them.
+The main session delegates review requests to `reviewer`. Only `reviewer` runs the review loop and starts its hidden independent review helper. The helper launch instructions stay in the reviewer profile, not the shared skills. This is an instruction rule, not a tool access restriction. Strict skill policies require a current version of `pi-interactive-subagents`. Run `pi update --extensions` if an existing installation does not support them.
 
 Trust decisions remain local. Review each project-level `.pi` prompt and use `/trust` when appropriate. Session history is also excluded and starts fresh on a new computer.

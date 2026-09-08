@@ -1,11 +1,23 @@
 ---
 name: iterative-review
-description: Runs a bounded review, fix, test, and fresh-rereview loop on a checked-out feature branch. Use for the reviewer subagent or when a user asks for an independent code review that can repair findings and prepare a pull request.
+description: Routes independent branch review requests to the reviewer subagent. Only that subagent runs the bounded review, fix, test, and fresh-rereview loop and prepares the PR handoff.
 ---
 
 # Iterative Review
 
 Review the complete feature-branch change. Fix verified defects in bounded rounds. Use a new independent reviewer for each pass. Hand the result to the reviewed PR skill only after the exact final revision passes.
+
+## Execution owner
+
+Only the `reviewer` subagent profile executes this workflow. If you are the main session or another agent:
+
+1. Delegate to `reviewer` with the repository root as `cwd`.
+2. Pass the exact task, purpose, constraints, known branch and base, and any prior review evidence. Preserve the requested review-only mode, repair limits, user decisions, and restrictions on edits, commits, or publication. Do not add authorization that the user did not give.
+3. Stop executing this skill in your session. Do not run the review loop, start its independent review helpers, or perform its repairs and certification yourself.
+4. Wait for the delivered result without polling. Relay questions and explicit user decisions to the same `reviewer` session. Do not change the reviewed worktree while it runs.
+5. If delegation is unavailable, report `blocked`. Do not substitute another agent or run the loop locally.
+
+The sections below are instructions for `reviewer` only. The reviewer follows them directly; it must not delegate this workflow to another reviewer.
 
 ## Defaults
 
@@ -29,7 +41,7 @@ Use exactly one final state:
 - `satisfied`: A fresh full review has no actionable findings. All required checks pass. The reviewed revision is still the current `HEAD`.
 - `fix-rounds-exhausted`: The fix-round limit was reached and findings remain. Park and ask the user what to do.
 - `blocked`: The environment, tests, repository state, missing context, or publication state prevents safe completion.
-- `accepted-with-findings`: The user explicitly accepted each named remaining finding.
+- `accepted-with-findings`: A fresh full review is complete. The user explicitly accepted each named remaining finding. All required checks pass. The reviewed revision is still the current `HEAD`.
 - `review-only`: The user requested findings but did not authorize edits.
 
 Only `satisfied` and `accepted-with-findings` can enter the PR handoff. Never describe an exhausted or blocked run as satisfactory or as having no mistakes.
@@ -83,9 +95,7 @@ Also keep:
 
 ## 3. Run one fresh full review
 
-For every pass, spawn a new `review-pass` subagent. Use a new name such as `review-pass-round-0`, `review-pass-round-1`, and so on. Start it in the repository root.
-
-The `review-pass` profile is intentionally hidden from `subagents_list`. Its absence from that list is expected. Spawn it directly with the exact agent name `review-pass`. Do not ask the user to expose it or provide its profile.
+Use a new independent review session for every full pass, including retries. Follow the helper launch instructions in the `reviewer` profile. Never reuse a previous review session to certify fixes.
 
 Give it:
 
@@ -95,9 +105,11 @@ Give it:
 - the list of commits made by prior fix rounds;
 - an instruction to perform one full base-to-target review and return the required JSON.
 
-Do not poll the subagent. Wait for its delivered result. If its JSON is missing or invalid, spawn one new pass and retry once. If the second result is invalid, use `blocked`.
+Do not poll the subagent. Wait for its delivered result. Validate the complete independent review output contract, not only JSON syntax. Require `review_status` (`complete` or `blocked`), both reviewed SHA fields, and the `findings`, `notes`, and `blockers` arrays. A complete pass must have two verified full SHAs and no blockers. A blocked pass must have at least one blocker; an unverified SHA must be `null`. If the JSON is missing or invalid, request one new independent pass and retry once. If the second result is invalid, use `blocked`.
 
-Confirm that `reviewed_base_sha` and `reviewed_head_sha` match the requested SHAs. A review of another revision cannot certify the branch.
+If `review_status` is `blocked`, keep its verified findings and blockers visible and use the workflow state `blocked`. Do not mark prior findings fixed, start repairs, or enter the PR handoff from a partial review. After the blocker is resolved, run a new fresh full review.
+
+For a complete pass, confirm that `reviewed_base_sha` equals the requested merge-base SHA and `reviewed_head_sha` equals the requested target SHA. Use `blocked` for a mismatch. An empty `findings` array or matching SHAs cannot certify an incomplete review.
 
 Merge the result into the ledger:
 
@@ -124,7 +136,7 @@ Group compatible findings into one small repair batch.
 
 Do not fix an `ask-user` finding without approval. Relay the full finding to the orchestrator and ask one question. This includes a remedy that changes product behavior or extends the requested design.
 
-If the user accepts the finding without a fix, record its exact ID as `accepted`. Do not silently downgrade its severity.
+If the user accepts the finding without a fix, record its exact ID as `accepted`. Do not silently downgrade its severity or remove a remaining defect from the review result. Acceptance applies only to that finding as presented. It does not waive review completion, project checks, or final revision checks. If all remaining findings are accepted and no repair is needed, proceed to project checks, not directly to the PR handoff.
 
 ### Branch causality
 
@@ -135,7 +147,7 @@ A finding can block this branch only when the branch introduced, activated, or w
 Before each repair batch:
 
 1. Check the current fix-round count.
-2. If the limit is reached, go to [Round exhaustion](#round-exhaustion).
+2. If the limit is reached, follow the "Round exhaustion" section below in this file.
 3. Ask whether the proposed fix adds new machinery. If it does, request user approval or replace it with a smaller correction.
 4. Recheck `git status --short` and confirm that no external change appeared.
 
@@ -161,7 +173,7 @@ Record the commit SHA. Increment the fix-round count once for the batch. Then ru
 
 ## 6. Run project checks
 
-When a fresh review returns no actionable findings, discover the applicable commands from repository instructions, CI workflows, package metadata, and existing scripts.
+After a fresh full review is complete, run this step when its findings are empty or every remaining finding has explicit user acceptance. Discover the applicable commands from repository instructions, CI workflows, package metadata, and existing scripts. Both `satisfied` and `accepted-with-findings` require these checks.
 
 Run the relevant checks, which can include:
 
@@ -182,11 +194,11 @@ If a check fails because of this branch, fix it as another bounded fix round. If
 
 ## 7. Certify the exact revision
 
-Before `satisfied`:
+Before `satisfied` or `accepted-with-findings`:
 
 1. Fetch the base ref again when available.
 2. If the merge base changed, run a new fresh full review against the updated merge base. This review does not consume a fix round unless it causes a repair.
-3. Confirm that the latest fresh full review has an empty actionable `findings` array.
+3. Confirm that the latest fresh full review has `review_status: complete`, no blockers, and matching merge-base and head SHAs. For `satisfied`, its `findings` array must be empty. For `accepted-with-findings`, every remaining finding must match an explicit user acceptance in the ledger. A new or changed finding needs a new decision; acceptance of an earlier finding does not cover it.
 4. Confirm that all required checks passed on the current code.
 5. Confirm that `git status --short` is clean.
 6. Confirm that current `HEAD` equals the last reviewed head.
@@ -209,7 +221,7 @@ An extra round is bounded to one. It does not reset the original budget. If find
 
 ## PR handoff
 
-For `satisfied` or `accepted-with-findings`, create this handoff in working context:
+Only after project checks and final certification pass, create this handoff for `satisfied` or `accepted-with-findings` in working context. Put the complete latest independent review JSON object in `review`. Keep accepted defects in its `findings` array and record their IDs and user acceptance evidence in `accepted_findings`.
 
 ```json
 {
@@ -217,6 +229,14 @@ For `satisfied` or `accepted-with-findings`, create this handoff in working cont
   "base_ref": "remote/base",
   "base_sha": "merge-base SHA",
   "head_sha": "reviewed HEAD SHA",
+  "review": {
+    "review_status": "complete",
+    "reviewed_base_sha": "merge-base SHA",
+    "reviewed_head_sha": "reviewed HEAD SHA",
+    "findings": [],
+    "notes": [],
+    "blockers": []
+  },
   "fix_rounds": 0,
   "review_commits": [],
   "what_changed": [],

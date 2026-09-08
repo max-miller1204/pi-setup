@@ -55,11 +55,17 @@ Use the same stable finding ID when the same invariant remains broken. Use a new
 
 ## Output
 
-Return one valid JSON object and no Markdown fence or additional prose:
+Return one valid JSON object and no Markdown fence or additional prose. Include every top-level field shown below.
+
+- Use `review_status: complete` only after you inspect the full requested delta and the context needed to assess it. This status means that the review finished, not that the branch has no defects. `blockers` must be empty.
+- Use `review_status: blocked` if missing files, unavailable Git objects, tool failures, or missing context prevent a full review. Put each reason and the missing evidence in `blockers`. Keep any verified findings, but do not treat a partial review as complete.
+- Set each reviewed SHA to the revision you verified. Use `null` when you could not verify it. Do not copy requested SHAs as proof that you reviewed them.
+- Keep an accepted finding in `findings` if the defect remains. The orchestrator tracks user acceptance separately.
 
 {
-  "reviewed_base_sha": "full SHA",
-  "reviewed_head_sha": "full SHA",
+  "review_status": "complete or blocked",
+  "reviewed_base_sha": "verified full SHA",
+  "reviewed_head_sha": "verified full SHA",
   "findings": [
     {
       "id": "stable-kebab-case-id",
@@ -75,7 +81,10 @@ Return one valid JSON object and no Markdown fence or additional prose:
       "causality": "introduced, activated, worsened, or required-by-scope"
     }
   ],
-  "notes": ["non-blocking or pre-existing observation"]
+  "notes": ["non-blocking or pre-existing observation"],
+  "blockers": []
 }
+
+An empty `findings` array does not prove that the review finished. A blocked pass can have no verified findings. Use JSON `null`, not the string `"null"`, for an unverified SHA. A complete pass must contain two verified full SHAs. A blocked pass must contain at least one blocker.
 
 If there are no actionable findings, return an empty `findings` array. Do not invent a finding to make the output look thorough.
