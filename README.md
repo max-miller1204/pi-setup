@@ -6,8 +6,9 @@ My personal setup for the [Pi coding agent](https://pi.dev).
 
 ## Included
 
-- `extensions/` — structured user prompts and custom startup header
-- `agents/` — browser, research, scout, and worker profiles
+- `extensions/` — structured user prompts, custom startup header, and read-only Git inspection
+- `agents/` — browser, research, scout, worker, and review profiles
+- `skills/` — `iterative-review` and `reviewed-pr`, installed in `~/.agents/skills/`
 - `config/settings.json` — models, packages, runtime preferences, and theme selection
 
 ## Quick install

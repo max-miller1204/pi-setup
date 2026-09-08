@@ -22,12 +22,10 @@
     }
   },
   "enabledModels": [
-    "openrouter/z-ai/glm-5.3",
     "openai-codex/gpt-5.6-sol",
     "openai-codex/gpt-5.6-luna",
     "openai-codex/gpt-5.6-terra",
-    "openrouter/~deepseek/deepseek-v4-flash-latest",
-    "openrouter/z-ai/glm-5.3-flash"
+    "openai-codex/gpt-6-astra"
   ],
   "tuiMode": "fullscreen",
   "hideThinkingBlock": false,

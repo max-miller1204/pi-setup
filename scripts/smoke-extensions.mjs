@@ -15,9 +15,10 @@ const args = [
   "--no-skills",
   "--no-prompt-templates",
   "--no-extensions",
-  "--tools", "ask_user_question",
+  "--tools", "ask_user_question,read_only_git",
   "-e", path.join(root, "extensions", "ask-user-question.ts"),
   "-e", path.join(root, "extensions", "custom-header.ts"),
+  "-e", path.join(root, "extensions", "read-only-git.ts"),
 ];
 
 try {
@@ -58,7 +59,7 @@ try {
     `custom-header command was not registered:\n${stdout}`,
   );
 
-  console.log("Extension smoke test passed: Pi loaded both extensions and registered builtin-header.");
+  console.log("Extension smoke test passed: Pi loaded all three extensions and registered builtin-header.");
 } finally {
   await rm(configDir, { recursive: true, force: true });
 }
