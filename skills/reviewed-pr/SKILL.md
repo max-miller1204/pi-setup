@@ -72,7 +72,7 @@ Before drafting:
 5. Confirm that all review commits are included in `HEAD`.
 6. Read repository instructions and pull request templates.
 7. Inspect the complete merge-base-to-`HEAD` diff.
-8. Inspect an existing pull request for this branch when one exists.
+8. Inspect an existing pull request for this branch when one exists. Record the local branch name and the selected publication target: forge host, base repository and branch, head repository and branch, and existing PR URL or number. Resolve ambiguous fork or remote identity before publication; branch names alone do not identify a pull request.
 
 If the revision changed after review, stop. Return control to the `reviewer` subagent for checks and a new fresh full review. If you are already that reviewer, resume your workflow. Otherwise, send the complete handoff and reason for the return to the same reviewer session when available, or delegate to a new `reviewer`. Do not run the review loop in the main session.
 
@@ -183,15 +183,27 @@ Keep the complete body below the forge limit. Prefer concise instructions over t
 
 Drafting is allowed after a valid handoff. Pushing, creating a pull request, changing its title or body, changing draft state, and adding labels are remote mutations. Perform them only when the user explicitly asked for that action.
 
-If publication is not already authorized, show the title and body and use `ask_question` to ask whether to publish. Ask one question.
+If publication is not already authorized, show the title and body and ask whether to publish. Use `ask_question` inside the reviewer subagent or `ask_user_question` in the main session. Ask one question.
 
-Before a push:
+### Before a push
 
-1. Confirm again that the worktree is clean and `HEAD` equals the reviewed SHA.
-2. Resolve the current branch upstream.
-3. If no upstream exists or more than one remote is plausible, ask which remote to use.
-4. Use a normal push. Never force-push.
-5. Verify that the remote branch points to the reviewed SHA.
+1. Confirm again that the worktree is clean, the local branch is unchanged, and `HEAD` equals the reviewed SHA.
+2. Resolve the current branch upstream and confirm that its repository and branch match the selected head target.
+3. If no upstream exists or more than one remote is plausible, ask which remote to use. After any answer, repeat the local revision and target checks.
+4. Use a normal push to the explicit selected remote and branch. Never force-push.
+5. Query the remote and verify that the selected head branch points to the reviewed SHA. A local tracking ref or successful push message alone is not sufficient evidence.
+
+### Before every PR mutation
+
+Apply this gate after user approval and immediately before each create, title/body update, draft-state change, or label change. It applies even when no push is needed. Do not reuse observations from before an approval wait or an earlier mutation.
+
+1. Confirm that the worktree is clean, the local branch is unchanged, and local `HEAD` equals the reviewed handoff SHA.
+2. Query the selected remote head branch. Its current SHA must equal the reviewed handoff SHA. If it differs or is absent, stop all PR mutations. If it is behind or absent, ask for separate push authorization when needed; only after an authorized push is verified may you repeat this gate. If it differs for any other reason, return to the reviewer for a new review. Do not attach old review evidence to a different remote revision.
+3. For an existing PR, query its explicit URL or number in the selected base repository. Confirm that it is open and that its forge, base repository and branch, head repository and branch, and head SHA match the selected target and reviewed handoff. Read its latest title, body, and draft state so manual changes are preserved.
+4. For a new PR, check again for an existing open PR with the selected repository and head identity. If one now exists, stop creation and ask whether to update that PR. Do not create a duplicate or treat create permission as update permission. After authorization, repeat this gate for the existing PR.
+5. If any query fails or identity differs or is uncertain, use `blocked` and perform no PR mutation. If the local revision changed, return to the reviewer for checks and a new full review.
+
+Address create commands with the explicit repository, base, and head. Address update commands with the explicit repository and PR URL or number. Do not let a CLI infer another target or push a branch during PR creation.
 
 Use a temporary body file outside the repository. Use `gh pr create` or `gh pr edit` with `--body-file`. Remove the temporary file when done. Do not pass a multiline body directly in a shell argument.
 
@@ -207,7 +219,7 @@ For an existing pull request:
 - Verify that its base and head branches match the reviewed handoff.
 - Update only the authorized title and body.
 
-After publication, query the pull request again. Confirm its URL, title, base, head, draft state, and remote head SHA.
+After each PR mutation, query the pull request again. Confirm its URL, title, base and head repository identities and branches, draft state, and remote head SHA. The head must still equal the reviewed handoff SHA. If it changed, stop further mutations and report that publication could not be certified. These checks detect observed changes; they are not an atomic lock on the remote branch.
 
 ## 8. Final checks and response
 

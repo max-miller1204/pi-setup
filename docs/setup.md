@@ -124,10 +124,14 @@ Start Pi and verify that:
 
 - `dots-system` loads without a resource collision;
 - `/mcp` lists `chrome-devtools`;
-- the custom header and `ask_user_question` tool load;
+- the custom header, `ask_user_question`, and `read_only_git` tools load;
 - the `scout`, `researcher`, `worker`, `browser-worker`, and `reviewer` sub-agents are available; and
 - `/skill:iterative-review` and `/skill:reviewed-pr` are available without duplicate-name warnings.
 
 The main session delegates review requests to `reviewer`. Only `reviewer` runs the review loop and starts its hidden independent review helper. The helper launch instructions stay in the reviewer profile, not the shared skills. This is an instruction rule, not a tool access restriction. Strict skill policies require a current version of `pi-interactive-subagents`. Run `pi update --extensions` if an existing installation does not support them.
+
+The independent review helper uses file-reading tools and `read_only_git`, not a shell. Install or update the package extension before you use the updated profiles, then start a new reviewer session. Resumed sessions keep their previous tool permissions. The reviewer also lists `read_only_git` so the launcher can pass its extension to the helper. See [`read-only-git.md`](read-only-git.md) for operations, restrictions, and validation.
+
+Review-only requests inspect committed changes and stop after findings. Uncommitted changes are excluded and need scope confirmation. PR updates require fresh local and remote revision checks, including updates that do not push code. User acceptance of a finding does not waive required checks.
 
 Trust decisions remain local. Review each project-level `.pi` prompt and use `/trust` when appropriate. Session history is also excluded and starts fresh on a new computer.

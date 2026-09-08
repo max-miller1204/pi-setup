@@ -39,8 +39,9 @@ Pull requests and pushes to `main` run GitHub Actions checks that:
 - prove the dependency guard catches the original stale-import regression;
 - enforce that `dots-system` is selected here but supplied only by Dots;
 - test new and repeated installs in temporary home directories, check skill backups, preserve external skills, and load skills with Pi;
+- test Git inspection and rejected mutations in temporary repositories, and load the review helper's tool selection with Pi;
 - type-check the extensions against the locked Pi API;
-- load both extensions through Pi's RPC runtime; and
+- load all three extensions through Pi's RPC runtime; and
 - reject dependency vulnerabilities reported by `npm audit`.
 
 Run the same checks locally:

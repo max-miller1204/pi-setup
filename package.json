@@ -8,11 +8,12 @@
   ],
   "type": "module",
   "scripts": {
-    "check": "npm run check:dependencies && npm run test:dependency-guard && npm run check:theme-ownership && npm run test:install && npm run typecheck && npm run smoke:extensions",
+    "check": "npm run check:dependencies && npm run test:dependency-guard && npm run check:theme-ownership && npm run test:install && npm run test:read-only-git && npm run typecheck && npm run smoke:extensions",
     "check:dependencies": "node scripts/check-dependencies.mjs",
     "test:dependency-guard": "node scripts/test-dependency-guard.mjs",
     "check:theme-ownership": "node scripts/check-theme-ownership.mjs",
     "test:install": "node scripts/test-install.mjs",
+    "test:read-only-git": "node scripts/test-read-only-git.mjs",
     "typecheck": "tsc --noEmit",
     "smoke:extensions": "node scripts/smoke-extensions.mjs"
   },

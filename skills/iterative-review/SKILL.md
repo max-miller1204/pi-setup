@@ -48,6 +48,10 @@ Only `satisfied` and `accepted-with-findings` can enter the PR handoff. Never de
 
 ## 1. Preflight
 
+Determine the mode before any repository operation. If the user requests findings without changes, use review-only mode. Otherwise, review-and-fix is the default, subject to the user's restrictions. Publication is never implied by either mode.
+
+In review-only mode, do not edit, stage, commit, fetch, create worktrees, run tests, builds, formatters, or generators, or push or change a pull request. Use read-only inspection only. The reviewed scope is the committed merge-base-to-target delta; staged, unstaged, and untracked changes are not included.
+
 1. Resolve the repository root with Git.
 2. Read all applicable repository instruction files.
 3. Record these values before any edit:
@@ -58,15 +62,14 @@ Only `satisfied` and `accepted-with-findings` can enter the PR handoff. Never de
    - default branch;
    - existing pull request title, body, base, head, and URL when one exists.
 4. Refuse detached `HEAD` and the default branch. Ask the orchestrator for a feature branch.
-5. Require a clean worktree for review-and-fix mode. If tracked or untracked changes exist, ask whether they belong to this review. Do not stash, reset, clean, or discard them.
+5. Require a clean worktree for review-and-fix mode. If tracked or untracked changes exist, ask whether they belong to this review. In review-only mode, disclose those excluded changes and confirm that a committed-only review is acceptable before proceeding. If the user needs uncommitted changes reviewed, use `blocked` and explain that this workflow requires a committed target. Do not stash, reset, clean, discard, or commit user work to make it fit this workflow.
 6. Determine the change purpose from the task, linked issue, or existing pull request. Preserve explicit constraints and exclusions. Ask if product intent is materially ambiguous.
 7. Determine the base in this order:
    - a base explicitly supplied by the user;
    - the base of the existing pull request;
    - the tracked remote default branch;
    - the local default branch.
-8. Fetch the selected remote base when it is safe and available. Do not rebase or merge. Record the base ref, base tip, and merge-base SHA. The review range starts at the merge base.
-9. Detect review-only mode from the task. Otherwise, review-and-fix is the default. Publication is never implied by review-and-fix.
+8. In review-and-fix mode, fetch the selected remote base when it is safe and available. In review-only mode, use local Git objects and report that the remote base was not refreshed. If required objects are unavailable, use `blocked`; do not fetch them. Do not rebase or merge. Record the base ref, base tip, and merge-base SHA. The review range starts at the merge base.
 
 If the repository or branch relationship is ambiguous, use `blocked` instead of guessing.
 
@@ -103,7 +106,8 @@ Give it:
 - base ref, base tip, merge-base SHA, and target `HEAD` SHA;
 - the complete finding ledger;
 - the list of commits made by prior fix rounds;
-- an instruction to perform one full base-to-target review and return the required JSON.
+- an instruction to perform one full base-to-target review and return the required JSON;
+- the review mode and excluded uncommitted paths. When the worktree is dirty, require committed-file inspection at the recorded SHAs, not working-tree contents, for source evidence.
 
 Do not poll the subagent. Wait for its delivered result. Validate the complete independent review output contract, not only JSON syntax. Require `review_status` (`complete` or `blocked`), both reviewed SHA fields, and the `findings`, `notes`, and `blockers` arrays. A complete pass must have two verified full SHAs and no blockers. A blocked pass must have at least one blocker; an unverified SHA must be `null`. If the JSON is missing or invalid, request one new independent pass and retry once. If the second result is invalid, use `blocked`.
 
@@ -117,6 +121,12 @@ Merge the result into the ledger:
 - Add an ID only for a different defect.
 - Mark a prior item `fixed` only after independent verification.
 - Keep non-blocking notes outside the actionable finding list.
+
+### Review-only exit
+
+After a complete, valid full review in review-only mode, return `review-only` and stop. Report the reviewed base and target SHAs, findings, notes, excluded uncommitted changes, and the local-base limitation. State that project checks were not run and that no certification or PR handoff was produced. Return `blocked` instead if the review could not finish.
+
+Do not continue to triage, repair rounds, project checks, certification, or PR drafting. A request to fix findings starts a separate review-and-fix run with new preflight checks and explicit user restrictions preserved.
 
 ## 4. Triage findings
 
