@@ -76,7 +76,7 @@ When this skill follows `iterative-review`, require a complete handoff with:
 
 Refuse `blocked`, `fix-rounds-exhausted`, and `review-only` handoffs.
 
-For both permitted states, validate the review output contract. Require `review_status: complete`, no blockers, and reviewed SHAs that match the handoff base and head. Confirm that the recorded checks cover all required project checks and passed on that exact final code. Confirm that each evidence scenario identifies an observable result or an exact limitation. A scenario marked as live must come from a real product run. Do not infer completion from an empty findings array or from the handoff status alone. If review evidence, required check evidence, or required scenario evidence is missing, incomplete, or failed, stop and return control to the `reviewer` subagent for `iterative-review`; do not draft or publish from that handoff.
+For both permitted states, validate the review output contract. Require `review_status: complete`, no blockers, and reviewed SHAs that match the handoff base and head. Confirm that the recorded checks cover all required project checks and passed on that exact final code. Confirm that each evidence scenario identifies an observable result or an exact limitation. A scenario marked as live must come from a real product run. Do not infer completion from an empty findings array or from the handoff status alone. If review evidence or required check evidence is missing, incomplete, or failed, stop and return control to the `reviewer` subagent for `iterative-review`; do not draft or publish from that handoff. Apply the same rule to missing or incomplete required scenario evidence. Reject a failed scenario unless the handoff is `accepted-with-findings` and its non-empty `finding_ids` map every observed failure to current findings that the user explicitly accepted. Verify that each failure matches the accepted description. An unknown ID, unrelated acceptance, or unmapped failure must block the handoff.
 
 For `satisfied`, the review findings must be empty. For `accepted-with-findings`, confirm that the user explicitly accepted every remaining finding ID and that the finding still matches the accepted description. Do not infer acceptance from silence. Acceptance does not waive review completion, project checks, or final revision checks.
 
@@ -195,6 +195,7 @@ Apply these rules:
 - State the observed result. Link a related artifact by label when one is available.
 - Explain each untested scenario in the Evidence cell and list the limitation below the table.
 - Do not mark an untested scenario as passed.
+- Keep an allowed failed scenario as `Fail`. Name its accepted finding IDs and describe the remaining defect in the Evidence cell. Do not count it as passed or remove it from the table.
 - Do not present a generic test pass, coverage value, or clean-worktree result as product evidence.
 
 Render useful artifacts after the table:

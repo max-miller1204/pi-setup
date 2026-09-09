@@ -276,6 +276,7 @@ Only after project checks and final certification pass, create this handoff for 
         "result": "passed, failed, or untested",
         "live": true,
         "observation": "Observable result or exact limitation.",
+        "finding_ids": [],
         "artifact_labels": []
       }
     ],
@@ -292,6 +293,8 @@ Only after project checks and final certification pass, create this handoff for 
   "accepted_findings": []
 }
 ```
+
+For each failed scenario, use `finding_ids` to identify the current findings that account for every observed failure. Keep its result `failed` even when the user accepted those findings. Only explicit acceptance of all mapped failures permits an `accepted-with-findings` handoff. Acceptance does not waive required project checks.
 
 Derive `what_changed` from the final diff. Do not use the user's motivation as a change summary. Include only reproduction, test, scenario, and artifact claims that were verified. Do not put secrets, machine-local paths, or unverified evidence URLs in the handoff.
 
