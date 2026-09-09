@@ -94,6 +94,8 @@ Also keep:
 - manual verification steps and observations;
 - reproduction steps for the old behavior when feasible;
 - expected behavior on the reviewed branch;
+- user-facing validation scenarios and their observed results;
+- reviewer-visible evidence artifacts and their labels;
 - commits created by this workflow.
 
 ## 3. Run one fresh full review
@@ -198,7 +200,13 @@ Run the relevant checks, which can include:
 
 Do not claim a command passed unless you ran it and observed success. Record the exact command, environment detail that matters, and result.
 
-For web-facing changes, use the `playwright-cli` workflow to verify the real user flow. Check console errors and failed network requests. Do not claim visible behavior works without browser verification. Do not commit screenshots, traces, videos, or generated browser state unless the user requests them.
+Build a short list of validation scenarios from the change purpose. Each scenario must name one user action or semantic validation step and one observable result. Keep the list proportionate to the branch.
+
+Exercise each scenario through the real product or another public interface when feasible. Record whether it passed, failed, or was not tested. Mark it as live only when you drove the real product in this run. A unit test, mock, fixture, or source inspection is not live evidence. If you cannot exercise a scenario, record the exact limitation. Never infer a pass.
+
+Collect reviewer-visible evidence when it helps demonstrate the result. Prefer screenshots, rendered output, CLI transcripts, API responses, persisted state, or short logs that directly show the changed behavior. A generic test pass, coverage report, or clean-worktree output is not product evidence. Keep each artifact outside the reviewed worktree unless it is an intentional branch file. Do not commit generated evidence files.
+
+For web-facing changes, use the `playwright-cli` workflow to verify the real user flow. Check console errors and failed network requests. Capture visual evidence for a visible change when the environment supports it. Do not claim visible behavior works without browser verification. Record why visual evidence is unavailable when a required tool, permission, or product surface is missing.
 
 If a check fails because of this branch, fix it as another bounded fix round. If a formatter or generator changes files, treat those changes as a repair batch and rereview the complete branch after the commit. If a failure is pre-existing or environmental, prove that distinction and use `blocked` when it prevents certification.
 
@@ -260,11 +268,35 @@ Only after project checks and final certification pass, create this handoff for 
   "tests": [
     {"command": "exact command", "result": "passed", "notes": ""}
   ],
+  "evidence": {
+    "summary": "Concise statement of what the evidence demonstrates.",
+    "scenarios": [
+      {
+        "name": "User action or semantic validation",
+        "result": "passed, failed, or untested",
+        "live": true,
+        "observation": "Observable result or exact limitation.",
+        "finding_ids": [],
+        "artifact_labels": []
+      }
+    ],
+    "artifacts": [
+      {
+        "kind": "screenshot, video, command-output, log, or other",
+        "label": "Reviewer-facing label",
+        "url": "optional remotely reachable URL",
+        "content": "optional short text shown in the PR"
+      }
+    ],
+    "limitations": []
+  },
   "accepted_findings": []
 }
 ```
 
-Derive `what_changed` from the final diff. Do not use the user's motivation as a change summary. Include only reproduction and test claims that were verified.
+For each failed scenario, use `finding_ids` to identify the current findings that account for every observed failure. Keep its result `failed` even when the user accepted those findings. Only explicit acceptance of all mapped failures permits an `accepted-with-findings` handoff. Acceptance does not waive required project checks.
+
+Derive `what_changed` from the final diff. Do not use the user's motivation as a change summary. Include only reproduction, test, scenario, and artifact claims that were verified. Do not put secrets, machine-local paths, or unverified evidence URLs in the handoff.
 
 Then read and follow [`../reviewed-pr/SKILL.md`](../reviewed-pr/SKILL.md). Pass the complete handoff to that workflow. If publication was not explicitly authorized, prepare the title and body, then ask before any push or pull-request mutation.
 
@@ -277,6 +309,7 @@ Report:
 - number of full review passes and fix rounds;
 - findings fixed and findings explicitly accepted;
 - exact checks and outcomes;
+- validation scenarios and evidence limitations;
 - commits created;
 - PR title/body draft or PR URL;
 - blockers or unresolved findings.

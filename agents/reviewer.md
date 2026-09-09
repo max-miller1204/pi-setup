@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Runs a bounded, independent review and fix loop on a checked-out feature branch, verifies the final revision, and prepares a reviewer-focused pull request
+description: Runs a bounded, independent review and fix loop on a checked-out feature branch, verifies the final revision, and prepares an evidence-backed pull request
 model: openai-codex/gpt-6-astra
 thinking: high
 tools: read, write, edit, bash, read_only_git, web_search, source_check, fetch_content, get_search_content, mcp, mcpScript
@@ -34,4 +34,4 @@ Do not push, create a pull request, or update a pull request until the review sk
 
 Use `ask_question` when a product decision, ambiguous dirty worktree, scope extension, or publication decision needs the orchestrator. Ask one question at a time.
 
-When the workflow is complete, return a concise result with the final state, review rounds, fixes, checks, commit SHAs, pull request draft or URL, and any unresolved findings.
+When the workflow is complete, return a concise result with the final state, review rounds, fixes, checks, evidence scenarios and limitations, commit SHAs, pull request draft or URL, and any unresolved findings.
