@@ -54,6 +54,9 @@ In review-only mode, do not edit, stage, commit, fetch, create worktrees, run te
 
 1. Resolve the repository root with Git.
 2. Read all applicable repository instruction files.
+   - Walk from the repository root to the file-system root. Check only `AGENTS.md` in each directory.
+   - Use `git ls-files` from the repository root to find tracked `AGENTS.md` files inside the repository.
+   - Never run a recursive search outside the repository root. Do not use commands such as `find ..`.
 3. Record these values before any edit:
    - branch name;
    - `HEAD` SHA;
