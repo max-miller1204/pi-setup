@@ -40,12 +40,12 @@ for skill_dir in "$repo_dir"/skills/*/; do
 done
 
 packages=(
-  "git:github.com/max-miller1204/pi-setup"
   "npm:stepstone"
   "npm:pi-web-access"
   "git:github.com/elpapi42/pi-observational-memory"
   "npm:pi-mcp-adapter"
   "git:github.com/max-miller1204/pi-interactive-subagents"
+  "git:github.com/max-miller1204/pi-setup"
 )
 
 for package in "${packages[@]}"; do
