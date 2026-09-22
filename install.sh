@@ -22,11 +22,10 @@ install -m 0644 "$repo_dir"/agents/*.md "$config_dir/agents/"
 skills_dir="$HOME/.agents/skills"
 skills_backup=""
 mkdir -p "$skills_dir"
-for skill_dir in "$repo_dir"/skills/*/; do
+shopt -s nullglob
+active_skill_dirs=("$repo_dir"/skills/*/)
+for skill_dir in "${active_skill_dirs[@]}"; do
   skill_name="$(basename "$skill_dir")"
-  case "$skill_name" in
-    mcp-scripting|playwright-cli) continue ;;
-  esac
   target="$skills_dir/$skill_name"
   if [[ -e "$target" || -L "$target" ]]; then
     if [[ -z "$skills_backup" ]]; then
@@ -40,12 +39,13 @@ for skill_dir in "$repo_dir"/skills/*/; do
 done
 
 packages=(
-  "npm:stepstone"
   "npm:pi-web-access"
-  "git:github.com/elpapi42/pi-observational-memory"
+  "git:github.com/max-miller1204/pi-observational-memory"
   "npm:pi-mcp-adapter"
   "git:github.com/max-miller1204/pi-interactive-subagents"
   "git:github.com/max-miller1204/pi-setup"
+  "git:github.com/obra/superpowers"
+  "git:github.com/max-miller1204/pi-session-tasks"
 )
 
 for package in "${packages[@]}"; do
@@ -76,5 +76,4 @@ echo "Installed Pi setup. Run /login in Pi to configure provider credentials."
 if [[ ! -f "$config_dir/themes/dots-system.json" ]]; then
   echo "Warning: dots-system is selected but not installed; run Dots theme sync or choose another Pi theme." >&2
 fi
-echo "Installed custom skills in $skills_dir."
-echo "Optional: install the playwright-cli skill used by browser-worker and reviewer."
+echo "Optional: install the playwright-cli skill used by browser-worker."

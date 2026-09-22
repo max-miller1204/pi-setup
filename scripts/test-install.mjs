@@ -8,10 +8,20 @@ import { loadSkillsFromDir } from "@earendil-works/pi-coding-agent";
 const root = process.cwd();
 const temp = await mkdtemp(path.join(os.tmpdir(), "pi-setup-install-"));
 const template = JSON.parse(await readFile(path.join(root, "config/settings.json"), "utf8"));
-const ownedSkills = ["iterative-review", "reviewed-pr"];
-const externalSkills = ["mcp-scripting", "playwright-cli"];
-
+const expectedPackages = [
+  "npm:pi-web-access",
+  "git:github.com/max-miller1204/pi-observational-memory",
+  "npm:pi-mcp-adapter",
+  "git:github.com/max-miller1204/pi-interactive-subagents",
+  "git:github.com/max-miller1204/pi-setup",
+  "git:github.com/obra/superpowers",
+  "git:github.com/max-miller1204/pi-session-tasks",
+];
+const ownedSkills = [];
+const externalSkills = ["mcp-scripting", "playwright-cli", "superpowers", "unrelated-skill"];
 try {
+  assert.deepEqual(template.packages, expectedPackages);
+  assert.equal(template.externalEditor, "nvim");
   const bin = path.join(temp, "bin");
   await mkdir(bin);
   // Record package requests without network access or changes to the active Pi setup.
@@ -38,14 +48,26 @@ settings.write_text(json.dumps(current))
     const originalSettings = { packages: ["npm:keep-me"], quietStartup: true };
     if (existing) {
       await writeFile(settingsPath, JSON.stringify(originalSettings));
-      await mkdir(path.join(skillsDir, "iterative-review"), { recursive: true });
-      await writeFile(path.join(skillsDir, "iterative-review", "SKILL.md"), "old custom skill\n");
     }
-    for (const name of [...externalSkills, "unrelated-skill"]) {
-      await mkdir(path.join(skillsDir, name), { recursive: true });
-      await writeFile(path.join(skillsDir, name, "SKILL.md"),
-        `---\nname: ${name}\ndescription: Test skill.\n---\n\nKeep this skill.\n`);
+    const externalFiles = new Map();
+    for (const name of externalSkills) {
+      const dir = path.join(skillsDir, name);
+      await mkdir(dir, { recursive: true });
+      const files = new Map([
+        ["SKILL.md", Buffer.from(`---\nname: ${name}\ndescription: Test skill.\n---\n\nKeep this skill.\n`)],
+        ["data.bin", Buffer.from([0, 1, 255, 10])],
+      ]);
+      externalFiles.set(name, files);
+      for (const [file, bytes] of files) await writeFile(path.join(dir, file), bytes);
     }
+    const assertExternalSkills = async () => {
+      for (const [name, files] of externalFiles) {
+        assert.deepEqual((await readdir(path.join(skillsDir, name))).sort(), [...files.keys()].sort());
+        for (const [file, bytes] of files) {
+          assert.deepEqual(await readFile(path.join(skillsDir, name, file)), bytes);
+        }
+      }
+    };
 
     const runInstall = () => execFileSync("bash", [path.join(root, "install.sh")], {
       cwd: home,
@@ -55,18 +77,18 @@ settings.write_text(json.dumps(current))
       stdio: "pipe",
     });
     runInstall();
+    await assertExternalSkills();
 
     if (existing) {
       const files = await readdir(config);
-      const backup = files.find((name) => name.startsWith("skills-backup."));
-      assert.ok(backup, "Existing skills must have a backup outside the discovery directory");
-      assert.equal(await readFile(path.join(config, backup, "iterative-review", "SKILL.md"), "utf8"), "old custom skill\n");
+      assert.equal(files.some((name) => name.startsWith("skills-backup.")), false);
       const settingsBackup = files.find((name) => name.startsWith("settings.json.backup."));
       assert.ok(settingsBackup);
       assert.deepEqual(JSON.parse(await readFile(path.join(config, settingsBackup), "utf8")), originalSettings);
     }
 
     runInstall();
+    await assertExternalSkills();
     const installed = JSON.parse(await readFile(settingsPath, "utf8"));
     const { packages, ...preferences } = template;
     for (const [key, value] of Object.entries(preferences)) assert.deepEqual(installed[key], value);
@@ -77,23 +99,25 @@ settings.write_text(json.dumps(current))
       assert.equal(await readFile(path.join(skillsDir, name, "SKILL.md"), "utf8"),
         await readFile(path.join(root, "skills", name, "SKILL.md"), "utf8"));
     }
-    for (const name of [...externalSkills, "unrelated-skill"]) {
-      assert.equal(await readFile(path.join(skillsDir, name, "SKILL.md"), "utf8"),
-        `---\nname: ${name}\ndescription: Test skill.\n---\n\nKeep this skill.\n`);
+    const activeAgents = (await readdir(path.join(root, "agents"))).sort();
+    const installedAgents = (await readdir(path.join(config, "agents"))).sort();
+    assert.deepEqual(installedAgents, activeAgents);
+    for (const inactive of ["reviewer.md", "review-pass.md"]) {
+      assert.ok(!installedAgents.includes(inactive), `${inactive} must not be installed`);
     }
-    for (const name of await readdir(path.join(root, "agents"))) {
+    for (const name of activeAgents) {
       assert.equal(await readFile(path.join(config, "agents", name), "utf8"),
         await readFile(path.join(root, "agents", name), "utf8"));
     }
     const loaded = loadSkillsFromDir({ dir: skillsDir, source: "test" });
     assert.deepEqual(loaded.diagnostics, []);
-    assert.deepEqual(loaded.skills.map((skill) => skill.name).sort(), [...ownedSkills, ...externalSkills, "unrelated-skill"].sort());
+    assert.deepEqual(loaded.skills.map((skill) => skill.name).sort(), [...ownedSkills, ...externalSkills].sort());
   }
 
   const resources = JSON.parse(await readFile(path.join(root, "package.json"), "utf8")).pi;
   assert.deepEqual(resources.skills, [], "Shared skills must not also load as package resources");
-  assert.deepEqual((await readdir(path.join(root, "skills"))).sort(), ownedSkills);
-  console.log("Installer tests passed: skills load, backups work, and external skills stay unchanged.");
+  assert.deepEqual((await readdir(path.join(root, "skills"))).filter((name) => !name.startsWith(".")).sort(), ownedSkills);
+  console.log("Installer tests passed: active agents and packages match; external skills stay unchanged.");
 } finally {
   await rm(temp, { recursive: true, force: true });
 }
