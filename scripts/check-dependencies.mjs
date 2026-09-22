@@ -43,6 +43,18 @@ function importedSpecifiers(source) {
 
 const failures = [];
 const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+const lockPath = path.join(root, "package-lock.json");
+const lock = JSON.parse(await readFile(lockPath, "utf8"));
+
+const requiredPiVersion = "0.87.0";
+for (const name of ["@earendil-works/pi-coding-agent", "@earendil-works/pi-tui"]) {
+  if (packageJson.devDependencies?.[name] !== requiredPiVersion) {
+    failures.push(`package.json devDependencies must pin ${name}@${requiredPiVersion}`);
+  }
+  if (lock.packages?.[`node_modules/${name}`]?.version !== requiredPiVersion) {
+    failures.push(`package-lock.json must resolve ${name}@${requiredPiVersion}`);
+  }
+}
 
 for (const field of dependencyFields) {
   for (const name of Object.keys(packageJson[field] ?? {})) {
@@ -59,8 +71,6 @@ for (const file of await collectSourceFiles(root)) {
   }
 }
 
-const lockPath = path.join(root, "package-lock.json");
-const lock = JSON.parse(await readFile(lockPath, "utf8"));
 for (const packagePath of Object.keys(lock.packages ?? {})) {
   const dependencyName = packagePath.match(/(?:^|\/)node_modules\/(?:[^/]+\/node_modules\/)*(@[^/]+\/[^/]+|[^/]+)$/)?.[1];
   if (dependencyName && isLegacyPiPackage(dependencyName)) {
