@@ -30,7 +30,8 @@ try {
 
   const result = spawnSync(process.execPath, [checker], { cwd: fixture, encoding: "utf8" });
   assert.notEqual(result.status, 0, "dependency guard accepted legacy Pi packages");
-  assert.match(result.stderr, /Legacy Pi dependencies are forbidden/);
+  assert.match(result.stderr, /Pi dependency validation failed/);
+  assert.match(result.stderr, /must pin @earendil-works\/pi-coding-agent@0\.87\.0/);
   assert.match(result.stderr, /pi-coding-agent/);
   assert.match(result.stderr, /pi-tui/);
   assert.match(result.stderr, /typebox/);

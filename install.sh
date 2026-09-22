@@ -12,10 +12,29 @@ settings_path="$config_dir/settings.json"
 mkdir -p "$config_dir/agents"
 
 if [[ -f "$settings_path" ]]; then
-  backup="$settings_path.backup.$(date +%Y%m%d%H%M%S)"
+  backup="$(mktemp "$settings_path.backup.XXXXXXXX")"
   cp "$settings_path" "$backup"
   echo "Backed up settings to $backup"
 fi
+
+# Retire only the setup's former active resource names. Preserve their exact contents.
+retired_backup=""
+retire_resource() {
+  local source="$1" relative="$2"
+  if [[ -e "$source" || -L "$source" ]]; then
+    if [[ -z "$retired_backup" ]]; then
+      retired_backup="$(mktemp -d "$config_dir/retired-resources.XXXXXX")"
+      echo "Backed up retired resources to $retired_backup"
+    fi
+    mkdir -p "$retired_backup/$(dirname "$relative")"
+    mv -- "$source" "$retired_backup/$relative"
+  fi
+}
+retire_resource "$config_dir/agents/reviewer.md" "agents/reviewer.md"
+retire_resource "$config_dir/agents/review-pass.md" "agents/review-pass.md"
+retire_resource "$config_dir/extensions/read-only-git.ts" "extensions/read-only-git.ts"
+retire_resource "$HOME/.agents/skills/iterative-review" "skills/iterative-review"
+retire_resource "$HOME/.agents/skills/reviewed-pr" "skills/reviewed-pr"
 
 install -m 0644 "$repo_dir"/agents/*.md "$config_dir/agents/"
 
@@ -47,6 +66,24 @@ packages=(
   "git:github.com/obra/superpowers"
   "git:github.com/max-miller1204/pi-session-tasks"
 )
+
+for superseded in "npm:stepstone" "git:github.com/elpapi42/pi-observational-memory"; do
+  if [[ -f "$settings_path" ]]; then
+    installed="$(python3 - "$settings_path" "$superseded" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+packages = json.loads(Path(sys.argv[1]).read_text()).get("packages", [])
+assert isinstance(packages, list), "settings packages must be a list"
+print("true" if sys.argv[2] in packages else "false")
+PY
+)"
+    if [[ "$installed" == "true" ]]; then
+      pi remove "$superseded"
+    fi
+  fi
+done
 
 for package in "${packages[@]}"; do
   pi install "$package"

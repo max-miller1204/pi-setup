@@ -1,8 +1,12 @@
 import assert from "node:assert/strict";
-import { access, readdir } from "node:fs/promises";
+import { access, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
 const root = process.cwd();
+const manifestPath = process.argv[2] ?? path.join(root, "package.json");
+const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+assert.deepEqual(manifest.pi?.extensions, ["./extensions/*.ts"], "Pi must load only active extensions");
+assert.deepEqual(manifest.pi?.skills, [], "Pi must not load bundled skills");
 const names = async (dir) => (await readdir(path.join(root, dir))).filter((name) => !name.startsWith(".")).sort();
 
 assert.deepEqual(await names("agents"), ["browser-worker.md", "researcher.md", "scout.md", "worker.md"]);

@@ -29,9 +29,11 @@ cd pi-setup
 ./install.sh
 ```
 
-The installer backs up an existing `~/.pi/agent/settings.json`, installs the seven configured Pi packages, copies the four active agent profiles, and merges the shared preferences into the existing settings. The packages include `superpowers`, `pi-session-tasks`, and the observational-memory fork at `git:github.com/max-miller1204/pi-observational-memory`. The fork's coordination feature branch is not yet merged into `master`.
+The installer backs up an existing `~/.pi/agent/settings.json`, installs the seven configured Pi packages, copies the four active agent profiles, and merges the shared preferences into the existing settings. On upgrade, it uses `pi remove` only for installed `npm:stepstone` and `git:github.com/elpapi42/pi-observational-memory`. It keeps all other user packages. The new packages include `superpowers`, `pi-session-tasks`, and the observational-memory fork at `git:github.com/max-miller1204/pi-observational-memory`. The fork's coordination feature branch is not yet merged into `master`. Remote package installation is not verified by the local tests. They use a stub Pi command. Verify the package locators after the coordination branch merges.
 
-The installer copies active skills from `skills/` to `~/.agents/skills/`. `skills/` has no active skills now. External skills stay unchanged. If an active skill replaces an existing copy, the installer saves the old copy in `~/.pi/agent/skills-backup.*`. These backups are outside the skill discovery directories. If `PI_CODING_AGENT_DIR` is set, settings, agents, and backups use that directory. Shared skills still use `$HOME/.agents/skills/`.
+The installer moves old `reviewer.md` and `review-pass.md` agents, `read-only-git.ts` extension, and `iterative-review` and `reviewed-pr` skill directories to a unique `~/.pi/agent/retired-resources.*` backup. It preserves all bytes, including user changes. These names were previously owned by this setup. The migration also backs up same-name user resources because it cannot tell who created them. Restore a file from the backup if you need it. The backup is outside Pi agent, extension, and skill discovery. A second install does not move it again.
+
+The installer copies active skills from `skills/` to `~/.agents/skills/`. `skills/` has no active skills now. Other skills stay unchanged. If an active skill replaces an existing copy, the installer saves the old copy in `~/.pi/agent/skills-backup.*`. These backups are outside skill discovery. If `PI_CODING_AGENT_DIR` is set, settings, agents, and backups use that directory. Shared skills still use `$HOME/.agents/skills/`.
 
 To install only the extensions, without settings, agent profiles, or shared skills:
 

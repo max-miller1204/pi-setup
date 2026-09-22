@@ -79,10 +79,10 @@ for (const packagePath of Object.keys(lock.packages ?? {})) {
 }
 
 if (failures.length > 0) {
-  console.error("Legacy Pi dependencies are forbidden:\n");
+  console.error("Pi dependency validation failed:\n");
   for (const failure of failures) console.error(`- ${failure}`);
-  console.error("\nUse @earendil-works Pi packages and typebox instead.");
+  console.error("\nUse the required Pi version and supported package names.");
   process.exit(1);
 }
 
-console.log("Dependency guard passed: no legacy Pi imports or dependencies found.");
+console.log("Dependency guard passed: Pi versions and package names are valid.");

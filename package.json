@@ -9,7 +9,7 @@
   "type": "module",
   "scripts": {
     "check": "npm run test:resource-layout && npm run check:dependencies && npm run test:dependency-guard && npm run check:theme-ownership && npm run test:install && npm run typecheck && npm run smoke:extensions",
-    "test:resource-layout": "node scripts/test-resource-layout.mjs",
+    "test:resource-layout": "node scripts/test-resource-layout.mjs && node scripts/test-resource-layout-guard.mjs",
     "check:dependencies": "node scripts/check-dependencies.mjs",
     "test:dependency-guard": "node scripts/test-dependency-guard.mjs",
     "check:theme-ownership": "node scripts/check-theme-ownership.mjs",
