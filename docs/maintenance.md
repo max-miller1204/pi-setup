@@ -21,7 +21,7 @@ git diff -- agents/
 
 Inspect new, untracked files with `git status --short`. For a new active skill, copy its complete directory into `skills/` and add its name to `ownedSkills` in `scripts/test-install.mjs`. Keep helper files and relative links with the skill. Do not add `mcp-scripting`, `playwright-cli`, or `superpowers`; their packages or tools supply them.
 
-The `reviewer`, `review-pass`, `read-only-git`, `iterative-review`, and `reviewed-pr` resources are dormant under `dormant/`. They are not installed or loaded. To restore a dormant resource, move it back into its active directory and update tests in the same change.
+The `reviewer`, `review-pass`, `read-only-git`, `iterative-review`, and `reviewed-pr` resources are dormant under `dormant/`. They are not installed by this setup. Previously installed copies can still load. See the one-time manual cleanup steps in [setup](setup.md). To restore a dormant resource to this repository, move it back into its active directory and update tests in the same change.
 
 Compare `~/.pi/agent/settings.json` with `config/settings.json` manually. Copy only portable preferences. Keep the `pi-setup` package entry in the template so new installations load the extensions. Do not copy `lastChangelogVersion`, credentials, or local paths.
 
@@ -39,7 +39,7 @@ Pull requests and pushes to `main` run GitHub Actions checks that:
 - prove the dependency guard catches the original stale-import regression;
 - enforce that `dots-system` is selected here but supplied only by Dots;
 - test the active and dormant resource layout;
-- test new and repeated installs in temporary home directories, confirm no active skill backups are made, and preserve external skills;
+- test new and repeated installs in temporary home directories, confirm no active skill backups are made, and preserve old packages and installed resources;
 - type-check the active extensions against the locked Pi API;
 - load both active extensions through Pi's RPC runtime; and
 - reject dependency vulnerabilities reported by `npm audit`.

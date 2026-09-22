@@ -29,9 +29,13 @@ cd pi-setup
 ./install.sh
 ```
 
-The installer backs up an existing `~/.pi/agent/settings.json`, installs the seven configured Pi packages, copies the four active agent profiles, and merges the shared preferences into the existing settings. On upgrade, it uses `pi remove` only for installed `npm:stepstone` and `git:github.com/elpapi42/pi-observational-memory`. It keeps all other user packages. The new packages include `superpowers`, `pi-session-tasks`, and the observational-memory fork at `git:github.com/max-miller1204/pi-observational-memory`. The fork's coordination feature branch is not yet merged into `master`. Remote package installation is not verified by the local tests. They use a stub Pi command. Verify the package locators after the coordination branch merges.
+The installer backs up an existing `~/.pi/agent/settings.json`, installs the seven configured Pi packages, copies the four active agent profiles, and merges the shared preferences into the existing settings. It does not remove old packages or change the order of existing package entries. Package order on an upgrade can differ from a fresh installation. The new packages include `superpowers`, `pi-session-tasks`, and the observational-memory fork at `git:github.com/max-miller1204/pi-observational-memory`. The fork's coordination feature branch is not yet merged into `master`. Remote package installation is not verified by the local tests. They use a stub Pi command. Verify the package locators after the coordination branch merges.
 
-The installer moves old `reviewer.md` and `review-pass.md` agents, `read-only-git.ts` extension, and `iterative-review` and `reviewed-pr` skill directories to a unique `~/.pi/agent/retired-resources.*` backup. It preserves all bytes, including user changes. These names were previously owned by this setup. The migration also backs up same-name user resources because it cannot tell who created them. Restore a file from the backup if you need it. The backup is outside Pi agent, extension, and skill discovery. A second install does not move it again.
+### One-time manual cleanup for existing homes
+
+Old packages stay active until you remove them yourself. Review `~/.pi/agent/settings.json` (or `$PI_CODING_AGENT_DIR/settings.json` when set). Back up the file. If you no longer need them, remove only the entries for `npm:stepstone` and `git:github.com/elpapi42/pi-observational-memory` from `packages`. Check string entries and object entries with a `source` field. Check pinned or versioned sources before you change them. Do not use `pi remove` when you need to preserve another version of the same package. Leave all other package entries and their order unchanged.
+
+The installer does not move previously installed review resources. To retire them manually, first inspect and back up these paths: `~/.pi/agent/agents/reviewer.md`, `~/.pi/agent/agents/review-pass.md`, `~/.pi/agent/extensions/read-only-git.ts`, `~/.agents/skills/iterative-review/`, and `~/.agents/skills/reviewed-pr/`. Use `$PI_CODING_AGENT_DIR` instead of `~/.pi/agent` when set. Move only the resources you no longer use to a backup outside the Pi agent, extension, and skill directories. Keep any modified files you need. Existing resources remain active until you move them.
 
 The installer copies active skills from `skills/` to `~/.agents/skills/`. `skills/` has no active skills now. Other skills stay unchanged. If an active skill replaces an existing copy, the installer saves the old copy in `~/.pi/agent/skills-backup.*`. These backups are outside skill discovery. If `PI_CODING_AGENT_DIR` is set, settings, agents, and backups use that directory. Shared skills still use `$HOME/.agents/skills/`.
 
@@ -129,6 +133,6 @@ Start Pi and verify that:
 - the `superpowers` and `pi-session-tasks` packages load; and
 - the configured observational-memory package uses `git:github.com/max-miller1204/pi-observational-memory`.
 
-The `reviewer` and `review-pass` profiles, `read-only-git` extension, and `iterative-review` and `reviewed-pr` skills are dormant under `dormant/`. This setup does not install or load them. See the dormant [`read-only-git` reference](read-only-git.md) for its preserved design.
+The `reviewer` and `review-pass` profiles, `read-only-git` extension, and `iterative-review` and `reviewed-pr` skills are dormant under `dormant/`. This setup does not install them. Previously installed copies can still load until you retire them manually. See the dormant [`read-only-git` reference](read-only-git.md) for its preserved design.
 
 Trust decisions remain local. Review each project-level `.pi` prompt and use `/trust` when appropriate. Session history is also excluded and starts fresh on a new computer.
