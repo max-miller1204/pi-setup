@@ -6,10 +6,10 @@ My personal setup for the [Pi coding agent](https://pi.dev).
 
 ## Included
 
-- `extensions/` — structured user prompts, custom startup header, and read-only Git inspection
-- `agents/` — browser, research, scout, worker, and review profiles
-- `skills/` — `iterative-review` and `reviewed-pr`, installed in `~/.agents/skills/`
-- `config/settings.json` — models, packages, runtime preferences, and theme selection
+- `extensions/`: active `ask-user-question` and `custom-header` extensions
+- `agents/`: active `browser-worker`, `researcher`, `scout`, and `worker` profiles
+- `config/settings.json`: models, runtime preferences, theme selection, and seven packages. These include `superpowers`, `pi-session-tasks`, and the `max-miller1204/pi-observational-memory` fork.
+- `dormant/`: preserved `reviewer`, `review-pass`, `read-only-git`, `iterative-review`, and `reviewed-pr` resources. The installer does not install or load them.
 
 ## Quick install
 

@@ -8,20 +8,20 @@ Update installed Pi extensions:
 pi update --extensions
 ```
 
-After pulling this repository, rerun `./install.sh` when agent profiles, settings, or skills have changed. `pi update --extensions` does not update the shared skill copies.
+After pulling this repository, rerun `./install.sh` when active agent profiles, settings, or skills have changed. `pi update --extensions` does not update shared skill copies. This repository has no active skills now.
 
 ## Copy local changes into the repository
 
-From the repository root, copy agent profiles and the two custom skills:
+From the repository root, copy only active agent profiles:
 
 ```bash
-cp ~/.pi/agent/agents/*.md agents/
-cp -R ~/.agents/skills/iterative-review skills/
-cp -R ~/.agents/skills/reviewed-pr skills/
-git diff -- agents/ skills/
+cp ~/.pi/agent/agents/browser-worker.md ~/.pi/agent/agents/researcher.md ~/.pi/agent/agents/scout.md ~/.pi/agent/agents/worker.md agents/
+git diff -- agents/
 ```
 
-Inspect new, untracked files with `git status --short`. For another custom skill, copy its complete directory into `skills/` and add its name to `ownedSkills` in `scripts/test-install.mjs`. Keep helper files and relative links with the skill. Do not add `mcp-scripting` or `playwright-cli`; their tools supply them.
+Inspect new, untracked files with `git status --short`. For a new active skill, copy its complete directory into `skills/` and add its name to `ownedSkills` in `scripts/test-install.mjs`. Keep helper files and relative links with the skill. Do not add `mcp-scripting`, `playwright-cli`, or `superpowers`; their packages or tools supply them.
+
+The `reviewer`, `review-pass`, `read-only-git`, `iterative-review`, and `reviewed-pr` resources are dormant under `dormant/`. They are not installed or loaded. To restore a dormant resource, move it back into its active directory and update tests in the same change.
 
 Compare `~/.pi/agent/settings.json` with `config/settings.json` manually. Copy only portable preferences. Keep the `pi-setup` package entry in the template so new installations load the extensions. Do not copy `lastChangelogVersion`, credentials, or local paths.
 
@@ -38,10 +38,10 @@ Pull requests and pushes to `main` run GitHub Actions checks that:
 - reject legacy `@mariozechner/pi-*` and `@sinclair/typebox` imports or dependencies;
 - prove the dependency guard catches the original stale-import regression;
 - enforce that `dots-system` is selected here but supplied only by Dots;
-- test new and repeated installs in temporary home directories, check skill backups, preserve external skills, and load skills with Pi;
-- test Git inspection and rejected mutations in temporary repositories, and load the review helper's tool selection with Pi;
-- type-check the extensions against the locked Pi API;
-- load all three extensions through Pi's RPC runtime; and
+- test the active and dormant resource layout;
+- test new and repeated installs in temporary home directories, confirm no active skill backups are made, and preserve external skills;
+- type-check the active extensions against the locked Pi API;
+- load both active extensions through Pi's RPC runtime; and
 - reject dependency vulnerabilities reported by `npm audit`.
 
 Run the same checks locally:
