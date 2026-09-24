@@ -5,7 +5,7 @@ tools: web_search, source_check, fetch_content, get_search_content, mcp, mcpScri
 skill-policy: allowlist
 available-skills: mcp-scripting
 skills: mcp-scripting
-model: openai-codex/gpt-5.6-sol
+model: openai-codex/gpt-6-sol
 thinking: high
 system-prompt: append
 auto-exit: true

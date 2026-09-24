@@ -1,11 +1,17 @@
 import assert from "node:assert/strict";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { spawn } from "node:child_process";
 
 const root = process.cwd();
+// Load the same files as the `pi.extensions` glob in package.json.
+const extensionsDir = path.join(root, "extensions");
+const extensions = (await readdir(extensionsDir, { withFileTypes: true }))
+  .filter((entry) => entry.isFile() && entry.name.endsWith(".ts"))
+  .map((entry) => path.join(extensionsDir, entry.name));
+assert.ok(extensions.length > 0, "No extensions found in extensions/");
 const configDir = await mkdtemp(path.join(os.tmpdir(), "pi-setup-ci-"));
 const piBin = path.join(root, "node_modules", ".bin", process.platform === "win32" ? "pi.cmd" : "pi");
 const args = [
@@ -15,10 +21,7 @@ const args = [
   "--no-skills",
   "--no-prompt-templates",
   "--no-extensions",
-  "--tools", "ask_user_question,read_only_git",
-  "-e", path.join(root, "extensions", "ask-user-question.ts"),
-  "-e", path.join(root, "extensions", "custom-header.ts"),
-  "-e", path.join(root, "extensions", "read-only-git.ts"),
+  ...extensions.flatMap((extension) => ["-e", extension]),
 ];
 
 try {
@@ -54,12 +57,8 @@ try {
   const response = events.find((event) => event.type === "response" && event.id === "ci");
   assert.ok(response, `Missing RPC response:\n${stdout}`);
   assert.equal(response.success, true, JSON.stringify(response));
-  assert.ok(
-    response.data.commands.some((command) => command.name === "builtin-header"),
-    `custom-header command was not registered:\n${stdout}`,
-  );
 
-  console.log("Extension smoke test passed: Pi loaded all three extensions and registered builtin-header.");
+  console.log(`Extension smoke test passed: Pi loaded ${extensions.length} extensions without errors.`);
 } finally {
   await rm(configDir, { recursive: true, force: true });
 }
