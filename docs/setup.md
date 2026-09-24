@@ -29,9 +29,9 @@ cd pi-setup
 ./install.sh
 ```
 
-The installer backs up an existing `~/.pi/agent/settings.json`, installs the configured Pi packages, copies the custom agent profiles, and merges the shared preferences into the existing settings. It also copies `skills/` to `~/.agents/skills/`. Other skills stay unchanged.
+The installer backs up an existing `~/.pi/agent/settings.json`, installs the configured Pi packages, copies the custom agent profiles and sub-agent profiles, and merges the shared preferences into the existing settings. It also copies `skills/` to `~/.agents/skills/`. Other skills stay unchanged.
 
-Existing copies of the custom skills are backed up in `~/.pi/agent/skills-backup.*` before the copy. These backups are outside the skill discovery directories. If `PI_CODING_AGENT_DIR` is set, settings, agents, and backups use that directory. Shared skills still use `$HOME/.agents/skills/`.
+Existing copies of the custom skills are backed up in `~/.pi/agent/skills-backup.*` before the copy. These backups are outside the skill discovery directories. If `PI_CODING_AGENT_DIR` is set, settings, agents, sub-agent profiles, and backups use that directory. Shared skills still use `$HOME/.agents/skills/`.
 
 To install only the extensions, without settings, agent profiles, or shared skills:
 

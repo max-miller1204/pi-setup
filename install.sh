@@ -19,6 +19,14 @@ fi
 
 install -m 0644 "$repo_dir"/agents/*.md "$config_dir/agents/"
 
+profiles_path="$config_dir/subagent-profiles.json"
+if [[ -f "$profiles_path" ]]; then
+  backup="$profiles_path.backup.$(date +%Y%m%d%H%M%S)"
+  cp "$profiles_path" "$backup"
+  echo "Backed up sub-agent profiles to $backup"
+fi
+install -m 0644 "$repo_dir/config/subagent-profiles.json" "$profiles_path"
+
 skills_dir="$HOME/.agents/skills"
 skills_backup=""
 mkdir -p "$skills_dir"

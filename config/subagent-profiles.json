@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "quick": {
+      "model": "openai-codex/gpt-6-luna",
+      "thinking": "low",
+      "guidance": "Use for focused investigation and routine tasks."
+    },
+    "balanced": {
+      "model": "openai-codex/gpt-6-sol",
+      "thinking": "medium",
+      "guidance": "Use for general implementation tasks."
+    },
+    "deep": {
+      "model": "openai-codex/gpt-6-astra",
+      "thinking": "high",
+      "guidance": "Use for complex research and difficult reviews."
+    }
+  }
+}

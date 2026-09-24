@@ -12,12 +12,13 @@ After pulling this repository, rerun `./install.sh` when agent profiles, setting
 
 ## Copy local changes into the repository
 
-From the repository root, copy the active and parked agent profiles:
+From the repository root, copy the active and parked agent profiles and the sub-agent profiles:
 
 ```bash
 cp ~/.pi/agent/agents/*.md agents/
 cp ~/.pi/agent/agents/dormant/*.md agents/dormant/
-git diff -- agents/
+cp ~/.pi/agent/subagent-profiles.json config/
+git diff -- agents/ config/
 ```
 
 For each custom skill, copy its complete directory from `~/.agents/skills/` into `skills/`.

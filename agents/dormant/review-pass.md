@@ -2,8 +2,6 @@
 name: review-pass
 description: Performs one fresh, read-only, full-branch code review pass for the reviewer orchestrator
 disable-model-invocation: true
-model: openai-codex/gpt-5.6-sol
-thinking: medium
 tools: read, grep, find, ls, read_only_git
 skill-policy: none
 system-prompt: append
