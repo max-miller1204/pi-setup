@@ -6,7 +6,7 @@ skill-policy: allowlist
 available-skills: playwright-cli, mcp-scripting
 skills: playwright-cli, mcp-scripting
 subagent_agents: scout, researcher
-model: openai-codex/gpt-5.6-sol
+model: openai-codex/gpt-6-sol
 thinking: medium
 system-prompt: append
 auto-exit: true

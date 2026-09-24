@@ -6,10 +6,15 @@ My personal setup for the [Pi coding agent](https://pi.dev).
 
 ## Included
 
-- `extensions/` — structured user prompts, custom startup header, and read-only Git inspection
-- `agents/` — browser, research, scout, worker, and review profiles
-- `skills/` — `iterative-review` and `reviewed-pr`, installed in `~/.agents/skills/`
-- `config/settings.json` — models, packages, runtime preferences, and theme selection
+- `extensions/` - Pi extensions that this package loads.
+- `agents/` - sub-agent profiles, copied to `~/.pi/agent/agents/`.
+- `skills/` - custom skills, copied to `~/.agents/skills/`.
+- `config/settings.json` - models, packages, runtime preferences, and theme selection.
+  The installer installs each package in this file.
+
+Each `dormant/` folder holds parked resources.
+The installer and Pi do not load them.
+To use a parked resource again, move it out of its `dormant/` folder.
 
 ## Quick install
 

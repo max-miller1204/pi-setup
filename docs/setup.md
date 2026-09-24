@@ -58,12 +58,11 @@ gh auth status
 
 ## 4. Check skills
 
-The installer supplies these custom skills from this repository:
-
-- `iterative-review` — delegates to `reviewer` for bounded review, repair, and independent review checks;
-- `reviewed-pr` — pull request drafts and authorized publication.
-
-They use `~/.agents/skills/` so other compatible agents can also find them. The Pi package manifest disables package skill loading to prevent duplicate names. Rerun `./install.sh` after skill changes.
+The installer copies each custom skill in `skills/` to `~/.agents/skills/`.
+It skips `skills/dormant/`.
+Other compatible agents can also find skills in `~/.agents/skills/`.
+The Pi package manifest disables package skill loading to prevent duplicate names.
+Rerun `./install.sh` after skill changes.
 
 The `mcp-scripting` skill comes from `pi-mcp-adapter`. Do not copy it into this repository.
 
@@ -73,7 +72,7 @@ Dots installs the Playwright CLI binary. Without Dots, first run `npm install -g
 playwright-cli install --skills=agents --global
 ```
 
-This creates `~/.agents/skills/playwright-cli/` for the `browser-worker` profile.
+This creates `~/.agents/skills/playwright-cli/` for agent profiles that allow it.
 
 Dots also installs `no-mistakes`. Without Dots, use its [official installation instructions](https://github.com/kunchenguid/no-mistakes#install). Initialize it inside each Git repository that should use the gate:
 
@@ -126,15 +125,12 @@ playwright-cli --help
 Start Pi and verify that:
 
 - `dots-system` loads without a resource collision;
-- `/mcp` lists `alphaxiv` and `chrome-devtools`;
-- the custom header, `ask_user_question`, and `read_only_git` tools load;
-- the `scout`, `researcher`, `worker`, `browser-worker`, and `reviewer` sub-agents are available; and
-- `/skill:iterative-review` and `/skill:reviewed-pr` are available without duplicate-name warnings.
+- `/mcp` lists your configured MCP servers;
+- the extensions in `extensions/` load without errors;
+- the sub-agents in `agents/` are available; and
+- the skills in `skills/` are available without duplicate-name warnings.
 
-The main session delegates review requests to `reviewer`. Only `reviewer` runs the review loop and starts its hidden independent review helper. The helper launch instructions stay in the reviewer profile, not the shared skills. This is an instruction rule, not a tool access restriction. Strict skill policies require a current version of `pi-interactive-subagents`. Run `pi update --extensions` if an existing installation does not support them.
-
-The independent review helper uses file-reading tools and `read_only_git`, not a shell. Install or update the package extension before you use the updated profiles, then start a new reviewer session. Resumed sessions keep their previous tool permissions. The reviewer also lists `read_only_git` so the launcher can pass its extension to the helper. See [`read-only-git.md`](read-only-git.md) for operations, restrictions, and validation.
-
-Review-only requests inspect committed changes and stop after findings. Uncommitted changes are excluded and need scope confirmation. PR updates require fresh local and remote revision checks, including updates that do not push code. User acceptance of a finding does not waive required checks.
+Strict skill policies require a current version of `pi-interactive-subagents`.
+Run `pi update --extensions` if an existing installation does not support them.
 
 Trust decisions remain local. Review each project-level `.pi` prompt and use `/trust` when appropriate. Session history is also excluded and starts fresh on a new computer.

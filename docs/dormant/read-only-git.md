@@ -1,5 +1,8 @@
 # Read-only Git inspection
 
+This extension is parked in `extensions/dormant/read-only-git.ts`.
+Pi does not load it.
+
 The `read_only_git` tool lets an independent reviewer inspect committed source without a shell. The reviewer profile also lists the tool so the subagent launcher can pass the extension to its helper.
 
 ## Operations

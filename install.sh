@@ -22,10 +22,11 @@ install -m 0644 "$repo_dir"/agents/*.md "$config_dir/agents/"
 skills_dir="$HOME/.agents/skills"
 skills_backup=""
 mkdir -p "$skills_dir"
+shopt -s nullglob
 for skill_dir in "$repo_dir"/skills/*/; do
   skill_name="$(basename "$skill_dir")"
   case "$skill_name" in
-    mcp-scripting|playwright-cli) continue ;;
+    dormant|mcp-scripting|playwright-cli) continue ;;
   esac
   target="$skills_dir/$skill_name"
   if [[ -e "$target" || -L "$target" ]]; then
@@ -39,18 +40,15 @@ for skill_dir in "$repo_dir"/skills/*/; do
   cp -R "$skill_dir". "$target/"
 done
 
-packages=(
-  "npm:stepstone"
-  "npm:pi-web-access"
-  "git:github.com/elpapi42/pi-observational-memory"
-  "npm:pi-mcp-adapter"
-  "git:github.com/max-miller1204/pi-interactive-subagents"
-  "git:github.com/max-miller1204/pi-setup"
-)
+packages="$(python3 -c 'import json, sys; print("\n".join(json.load(open(sys.argv[1]))["packages"]))' "$repo_dir/config/settings.json")"
+if [[ -z "$packages" ]]; then
+  echo "config/settings.json lists no packages" >&2
+  exit 1
+fi
 
-for package in "${packages[@]}"; do
+while IFS= read -r package; do
   pi install "$package"
-done
+done <<< "$packages"
 
 python3 - "$repo_dir/config/settings.json" "$settings_path" <<'PY'
 import json
@@ -77,4 +75,3 @@ if [[ ! -f "$config_dir/themes/dots-system.json" ]]; then
   echo "Warning: dots-system is selected but not installed; run Dots theme sync or choose another Pi theme." >&2
 fi
 echo "Installed custom skills in $skills_dir."
-echo "Optional: install the playwright-cli skill used by browser-worker and reviewer."
