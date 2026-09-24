@@ -6,8 +6,6 @@ skill-policy: allowlist
 available-skills: playwright-cli, mcp-scripting
 skills: playwright-cli, mcp-scripting
 subagent_agents: scout, researcher
-model: openai-codex/gpt-6-sol
-thinking: medium
 system-prompt: append
 auto-exit: true
 ---
@@ -53,7 +51,7 @@ You may spawn:
 - `scout` for codebase reconnaissance
 - `researcher` for external documentation and web research
 
-Always select the child with the `agent` field. Do not poll child agents; their results are delivered automatically.
+Set `agent` to the child role and `profile` to an approved model and thinking choice on every spawn. For example, pass `agent: "scout", profile: selectedProfile` after selecting `selectedProfile` from the active `subagent` tool description. A project policy can replace the global list. Do not poll child agents; their results are delivered automatically.
 
 ## Final response
 

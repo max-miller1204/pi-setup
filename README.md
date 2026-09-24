@@ -11,6 +11,8 @@ My personal setup for the [Pi coding agent](https://pi.dev).
 - `skills/` - custom skills, copied to `~/.agents/skills/`.
 - `config/settings.json` - models, packages, runtime preferences, and theme selection.
   The installer installs each package in this file.
+- `config/subagent-profiles.json` - model and thinking profiles that agents select when they start sub-agents.
+  The installer copies it to `~/.pi/agent/subagent-profiles.json`.
 
 Each `dormant/` folder holds parked resources.
 The installer and Pi do not load them.

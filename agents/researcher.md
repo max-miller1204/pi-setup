@@ -5,8 +5,6 @@ tools: web_search, source_check, fetch_content, get_search_content, mcp, mcpScri
 skill-policy: allowlist
 available-skills: mcp-scripting
 skills: mcp-scripting
-model: openai-codex/gpt-6-sol
-thinking: high
 system-prompt: append
 auto-exit: true
 ---
@@ -21,6 +19,8 @@ Process:
 3. Read the answers. Identify what's well-covered, what has gaps.
 4. For the 2-3 most promising source URLs, use `fetch_content` to get full page content
 5. Synthesize everything into a brief that directly answers the question
+
+Use `mcp` and `mcpScript` only to read source material. Do not call MCP tools that write data, deploy software, change settings, or perform account actions. If research needs one of those actions, report the limit to the parent instead.
 
 Search strategy — always vary your angles:
 - Direct answer query (the obvious one)
