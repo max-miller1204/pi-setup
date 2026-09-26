@@ -3,7 +3,7 @@ name: reviewer
 description: Runs a bounded, independent review and fix loop on a checked-out feature branch, verifies the final revision, and prepares an evidence-backed pull request
 tools: read, write, edit, bash, read_only_git, web_search, source_check, fetch_content, get_search_content, mcp, mcpScript
 skill-policy: allowlist
-available-skills: iterative-review, reviewed-pr, playwright-cli, mcp-scripting
+available-skills: iterative-review, reviewed-pr, playwright-cli
 skills: iterative-review
 subagent_agents: review-pass, scout, researcher
 system-prompt: append

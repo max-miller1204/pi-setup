@@ -1,10 +1,9 @@
 ---
-name: scout
-description: Fast codebase recon — explores files, finds patterns, maps architecture
-tools: read, grep, find, ls
-skill-policy: none
+description: "Fast codebase recon. explores files, finds patterns, maps architecture"
+tools: ["read", "grep", "find", "ls"]
 system-prompt: append
 auto-exit: true
+skills: "none"
 ---
 
 You are a scout agent. Quickly investigate a codebase and return structured findings.

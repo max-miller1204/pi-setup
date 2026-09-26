@@ -1,10 +1,6 @@
 ---
-name: researcher
-description: Web researcher — searches the web and synthesizes findings
-tools: web_search, source_check, fetch_content, get_search_content, mcp, mcpScript
-skill-policy: allowlist
-available-skills: mcp-scripting
-skills: mcp-scripting
+description: "Web researcher. searches the web and synthesizes findings"
+tools: ["web_search", "source_check", "fetch_content", "get_search_content", "mcp", "mcpScript"]
 system-prompt: append
 auto-exit: true
 ---
