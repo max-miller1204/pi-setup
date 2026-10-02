@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { mkdtemp, readdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -6,11 +7,19 @@ import process from "node:process";
 import { spawn } from "node:child_process";
 
 const root = process.cwd();
-// Load the same files as the `pi.extensions` glob in package.json.
+// Load the same files as the `pi.extensions` globs in package.json:
+// `extensions/*.ts` and `extensions/*/index.ts`. Skip the dormant folder.
 const extensionsDir = path.join(root, "extensions");
-const extensions = (await readdir(extensionsDir, { withFileTypes: true }))
-  .filter((entry) => entry.isFile() && entry.name.endsWith(".ts"))
-  .map((entry) => path.join(extensionsDir, entry.name));
+const entries = await readdir(extensionsDir, { withFileTypes: true });
+const extensions = [
+  ...entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".ts"))
+    .map((entry) => path.join(extensionsDir, entry.name)),
+  ...entries
+    .filter((entry) => entry.isDirectory() && entry.name !== "dormant")
+    .map((entry) => path.join(extensionsDir, entry.name, "index.ts"))
+    .filter((indexPath) => existsSync(indexPath)),
+];
 assert.ok(extensions.length > 0, "No extensions found in extensions/");
 const configDir = await mkdtemp(path.join(os.tmpdir(), "pi-setup-ci-"));
 const piBin = path.join(root, "node_modules", ".bin", process.platform === "win32" ? "pi.cmd" : "pi");

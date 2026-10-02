@@ -8,18 +8,19 @@ Update installed Pi extensions:
 pi update --extensions
 ```
 
-After pulling this repository, rerun `./install.sh` when agent profiles, settings, or skills have changed. `pi update --extensions` does not update the shared skill copies.
+After pulling this repository, rerun `./install.sh` when sub-agents, settings, or skills have changed. `pi update --extensions` does not update the shared skill copies.
 
 ## Copy local changes into the repository
 
-From the repository root, copy the active and parked agent profiles and the sub-agent profiles:
+From the repository root, copy the sub-agents:
 
 ```bash
 cp ~/.pi/agent/agents/*.md agents/
-cp ~/.pi/agent/agents/dormant/*.md agents/dormant/
-cp ~/.pi/agent/subagent-profiles.json config/
-git diff -- agents/ config/
+git diff -- agents/
 ```
+
+Each sub-agent needs `name` and `description` in its frontmatter.
+The `subagent` extension skips a file without them.
 
 For each custom skill, copy its complete directory from `~/.agents/skills/` into `skills/`.
 Keep helper files and relative links with the skill.

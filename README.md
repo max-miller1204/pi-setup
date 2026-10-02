@@ -7,12 +7,30 @@ My personal setup for the [Pi coding agent](https://pi.dev).
 ## Included
 
 - `extensions/` - Pi extensions that this package loads.
-- `agents/` - sub-agent profiles, copied to `~/.pi/agent/agents/`.
+- `agents/` - sub-agents for the `subagent` extension, copied to `~/.pi/agent/agents/`.
+- `prompts/` - workflow prompt templates that chain the sub-agents. This package loads them.
 - `skills/` - custom skills, copied to `~/.agents/skills/`.
 - `config/settings.json` - models, packages, runtime preferences, and theme selection.
   The installer installs each package in this file.
-- `config/subagent-profiles.json` - model and thinking profiles that agents select when they start sub-agents.
-  The installer copies it to `~/.pi/agent/subagent-profiles.json`.
+
+## Extensions
+
+| Extension | What it does |
+|---|---|
+| `ask-user-question.ts` | Lets the agent ask you one question with options or free text. |
+| `background-subagents.ts` | Starts named sub-agents that work in the background. Their answers come back as messages. Port of pi-durable `23-subagent-background.ts`. |
+| `bash-venv-timing.ts` | Times each `bash` call (`/bash-timings`). `/venv` runs `bash` inside `.venv`. Port of pi-durable `30-tool-override.ts`. |
+| `custom-header.ts` | Shows a custom header. |
+| `git-checkpoint.ts` | Saves the working tree at each prompt. When you fork, it offers to restore the code. Fixed copy of the Pi example. |
+| `handoff.ts` | `/handoff <goal>` moves the useful context into a new session. Pi example. |
+| `plan-mode/` | `/plan` turns on read-only planning with step tracking. Pi example, changed to use `ask_user_question` and `web_search`. |
+| `qna.ts` | `/qna` copies the questions from the last answer into the editor. Pi example. |
+| `reviewer.ts` | The `review` tool and `/review` start a read-only reviewer on the uncommitted changes. It looks again until it has no findings. Port of pi-durable `28-reviewer.ts`. |
+| `subagent/` | The `subagent` tool runs the agents in `agents/` as single, parallel, or chained tasks. Pi example. |
+| `tools.ts` | `/tools` turns tools on and off for the session. Pi example. |
+
+The agents in `agents/` are the Pi example agents: `scout`, `planner`, `reviewer`, and `worker`.
+Their Claude models are changed to `openai-codex` models.
 
 Each `dormant/` folder holds parked resources.
 The installer and Pi do not load them.

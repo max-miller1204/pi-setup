@@ -7,7 +7,6 @@
   "packages": [
     "npm:pi-web-access",
     "npm:pi-mcp-adapter",
-    "git:github.com/max-miller1204/pi-interactive-subagents",
     "git:github.com/max-miller1204/pi-setup",
     "git:github.com/obra/superpowers",
     "git:github.com/max-miller1204/pi-session-tasks",

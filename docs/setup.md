@@ -29,11 +29,11 @@ cd pi-setup
 ./install.sh
 ```
 
-The installer backs up an existing `~/.pi/agent/settings.json`, installs the configured Pi packages, copies the custom agent profiles and sub-agent profiles, and merges the shared preferences into the existing settings. It also copies `skills/` to `~/.agents/skills/`. Other skills stay unchanged.
+The installer backs up an existing `~/.pi/agent/settings.json`, installs the configured Pi packages, copies the sub-agents, and merges the shared preferences into the existing settings. It also copies `skills/` to `~/.agents/skills/`. Other skills stay unchanged.
 
-Existing copies of the custom skills are backed up in `~/.pi/agent/skills-backup.*` before the copy. These backups are outside the skill discovery directories. If `PI_CODING_AGENT_DIR` is set, settings, agents, sub-agent profiles, and backups use that directory. Shared skills still use `$HOME/.agents/skills/`.
+Existing copies of the custom skills are backed up in `~/.pi/agent/skills-backup.*` before the copy. These backups are outside the skill discovery directories. If `PI_CODING_AGENT_DIR` is set, settings, agents, and backups use that directory. Shared skills still use `$HOME/.agents/skills/`.
 
-To install only the extensions, without settings, agent profiles, or shared skills:
+To install only the extensions and prompts, without settings, sub-agents, or shared skills:
 
 ```bash
 pi install git:github.com/max-miller1204/pi-setup
@@ -127,10 +127,7 @@ Start Pi and verify that:
 - `dots-system` loads without a resource collision;
 - `/mcp` lists your configured MCP servers;
 - the extensions in `extensions/` load without errors;
-- the sub-agents in `agents/` are available; and
+- the sub-agents in `agents/` are available to the `subagent` tool; and
 - the skills in `skills/` are available without duplicate-name warnings.
-
-Strict skill policies require a current version of `pi-interactive-subagents`.
-Run `pi update --extensions` if an existing installation does not support them.
 
 Trust decisions remain local. Review each project-level `.pi` prompt and use `/trust` when appropriate. Session history is also excluded and starts fresh on a new computer.
