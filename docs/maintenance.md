@@ -24,8 +24,8 @@ The `subagent` extension skips a file without them.
 
 For each custom skill, copy its complete directory from `~/.agents/skills/` into `skills/`.
 Keep helper files and relative links with the skill.
-Do not add `mcp-scripting` or `playwright-cli`.
-Their tools supply them.
+Do not add `playwright-cli`.
+Its tool supplies it.
 
 Inspect new, untracked files with `git status --short`.
 Remove repository files that you deleted from the live configuration.
@@ -70,7 +70,7 @@ This repository intentionally excludes:
 - sessions and trust decisions;
 - caches, installed dependencies, and generated model catalogs;
 - nested package clones and local development artifacts;
-- externally generated MCP scripting, Playwright CLI, and no-mistakes skills;
+- externally generated Playwright CLI and no-mistakes skills;
 - local skill and settings backups;
 - the Herdr state extension; and
 - the Dots theme ownership marker.
